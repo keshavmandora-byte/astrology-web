@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ॐ भविष्य दर्पण — Future Mirror</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Philosopher:ital,wght@0,400;0,700;1,400&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --gold: #f5c842;
+    --gold-light: #ffe97a;
+    --saffron: #ff8c00;
+    --deep-purple: #0a0015;
+    --cosmic-blue: #05001a;
+    --glass: rgba(255,255,255,0.06);
+    --glass-border: rgba(255,215,0,0.25);
+    --glow: 0 0 30px rgba(245,200,66,0.4), 0 0 60px rgba(245,200,66,0.15);
+    --text-glow: 0 0 20px rgba(245,200,66,0.8);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: 'Philosopher', serif;
+    background: var(--deep-purple);
+    color: #fff;
+    overflow-x: hidden;
+  }
+
+  /* ============ STARS CANVAS ============ */
+  #stars-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ============ PAGE 1 — WELCOME ============ */
+  #page1 {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .ganesha-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 40%, rgba(255,140,0,0.18) 0%, transparent 65%),
+      radial-gradient(ellipse at 50% 100%, rgba(139,0,0,0.35) 0%, transparent 50%),
+      linear-gradient(180deg, #0a0010 0%, #1a0520 40%, #0d0008 100%);
+    z-index: 0;
+  }
+
+  .ganesha-img-container {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  /* Decorative Ganesha SVG silhouette */
+  .ganesha-silhouette {
+    width: min(520px, 80vw);
+    opacity: 0.13;
+    filter: drop-shadow(0 0 60px rgba(255,140,0,0.6));
+    animation: floatGanesha 6s ease-in-out infinite;
+  }
+
+  @keyframes floatGanesha {
+    0%,100% { transform: translateY(0px); }
+    50% { transform: translateY(-18px); }
+  }
+
+  .mandala-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(255,215,0,0.12);
+    animation: spinSlow linear infinite;
+  }
+  .mandala-ring:nth-child(1){ width:300px;height:300px; animation-duration:40s; }
+  .mandala-ring:nth-child(2){ width:500px;height:500px; animation-duration:60s; animation-direction:reverse; border-color:rgba(255,140,0,0.1); }
+  .mandala-ring:nth-child(3){ width:700px;height:700px; animation-duration:80s; }
+
+  @keyframes spinSlow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+  .diya-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .spark {
+    position: absolute;
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: sparkFloat linear infinite;
+    opacity: 0;
+  }
+
+  @keyframes sparkFloat {
+    0%   { opacity: 0; transform: translateY(0) scale(0); }
+    20%  { opacity: 1; transform: translateY(-20px) scale(1); }
+    100% { opacity: 0; transform: translateY(-120px) scale(0.3); }
+  }
+
+  .welcome-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 2rem;
+    animation: fadeZoomIn 2s ease-out forwards;
+  }
+
+  @keyframes fadeZoomIn {
+    from { opacity: 0; transform: scale(0.85) translateY(30px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .om-symbol {
+    font-size: clamp(3rem, 10vw, 6rem);
+    color: var(--gold);
+    filter: drop-shadow(0 0 30px rgba(245,200,66,0.9));
+    animation: omPulse 3s ease-in-out infinite;
+    margin-bottom: 0.5rem;
+    display: block;
+    font-family: 'Noto Sans Devanagari', sans-serif;
+  }
+
+  @keyframes omPulse {
+    0%,100% { filter: drop-shadow(0 0 20px rgba(245,200,66,0.7)); transform: scale(1); }
+    50%     { filter: drop-shadow(0 0 50px rgba(245,200,66,1)); transform: scale(1.05); }
+  }
+
+  .welcome-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.2rem, 4vw, 2.4rem);
+    color: var(--gold-light);
+    text-shadow: var(--text-glow);
+    letter-spacing: 0.08em;
+    line-height: 1.4;
+    margin-bottom: 0.6rem;
+  }
+
+  .welcome-subtitle {
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-size: clamp(1.1rem, 3vw, 1.8rem);
+    color: var(--saffron);
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 15px rgba(255,140,0,0.7);
+  }
+
+  .welcome-tagline {
+    font-size: clamp(0.85rem, 2vw, 1.05rem);
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 1rem;
+  }
+
+  .divider-line {
+    width: 200px;
+    height: 1px;
+    margin: 1.5rem auto;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .scroll-down-btn {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    text-decoration: none;
+    animation: bounceDown 2s ease-in-out infinite;
+  }
+
+  .scroll-down-btn span {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: rgba(255,215,0,0.6);
+    text-transform: uppercase;
+  }
+
+  .scroll-arrow {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,215,0,0.4);
+    display: flex; align-items:center; justify-content:center;
+    font-size: 1.3rem;
+    color: var(--gold);
+    background: rgba(255,215,0,0.07);
+    transition: all 0.3s;
+  }
+
+  .scroll-down-btn:hover .scroll-arrow {
+    background: rgba(255,215,0,0.15);
+    border-color: var(--gold);
+    box-shadow: 0 0 20px rgba(255,215,0,0.4);
+  }
+
+  @keyframes bounceDown {
+    0%,100%{ transform: translateX(-50%) translateY(0); }
+    50%    { transform: translateX(-50%) translateY(8px); }
+  }
+
+  /* ============ PAGE 2 — MAIN ============ */
+  #page2 {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 4rem 1rem 3rem;
+    z-index: 1;
+  }
+
+  .page2-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 1s ease-out forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(30px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  .page2-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem, 5vw, 2.8rem);
+    background: linear-gradient(135deg, var(--gold-light), var(--saffron), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 20px rgba(255,200,0,0.4));
+  }
+
+  .page2-subtitle {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.2em;
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+  }
+
+  /* Center Button */
+  .cta-btn {
+    position: relative;
+    padding: 1.1rem 2.8rem;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(0.9rem, 2.5vw, 1.15rem);
+    color: var(--deep-purple);
+    background: linear-gradient(135deg, var(--gold-light), var(--saffron));
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 0 30px rgba(255,200,0,0.5), 0 4px 20px rgba(0,0,0,0.4);
+    transition: all 0.3s ease;
+    letter-spacing: 0.05em;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+
+  .cta-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .cta-btn:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 0 50px rgba(255,200,0,0.7), 0 8px 30px rgba(0,0,0,0.5);
+  }
+
+  .cta-btn:hover::before { opacity: 1; }
+
+  .cta-btn:active { transform: translateY(0) scale(0.98); }
+
+  /* Form Card */
+  .form-card {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 8px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+    display: none;
+    animation: slideDown 0.5s ease-out forwards;
+    margin-bottom: 2rem;
+  }
+
+  .form-card.visible { display: block; }
+
+  @keyframes slideDown {
+    from { opacity:0; transform:translateY(-20px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  .form-group {
+    margin-bottom: 1.4rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+    opacity: 0.85;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 0.85rem 1.2rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,215,0,0.2);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 1rem;
+    font-family: 'Philosopher', serif;
+    transition: all 0.3s;
+    outline: none;
+  }
+
+  .form-group input:focus {
+    border-color: var(--gold);
+    background: rgba(255,215,0,0.06);
+    box-shadow: 0 0 20px rgba(255,200,0,0.2);
+  }
+
+  .form-group input::placeholder { color: rgba(255,255,255,0.3); }
+
+  .btn-row {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+
+  .submit-btn, .reset-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 0.85rem 1.2rem;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Philosopher', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .submit-btn {
+    background: linear-gradient(135deg, var(--gold), var(--saffron));
+    color: var(--deep-purple);
+    box-shadow: 0 4px 20px rgba(255,200,0,0.3);
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(255,200,0,0.5);
+  }
+
+  .reset-btn {
+    background: rgba(255,255,255,0.07);
+    color: rgba(255,255,255,0.7);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .reset-btn:hover {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+  }
+
+  /* Loader */
+  .loader-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10,0,21,0.85);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .loader-overlay.active { display: flex; }
+
+  .lotus-spinner {
+    width: 80px; height: 80px;
+    border: 3px solid rgba(255,215,0,0.15);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin { to{transform:rotate(360deg)} }
+
+  .loader-text {
+    font-family: 'Philosopher', serif;
+    color: var(--gold);
+    font-size: 1.1rem;
+    opacity: 0.8;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
+
+  /* Prediction Card */
+  .prediction-card {
+    display: none;
+    width: 100%;
+    max-width: 700px;
+    background: var(--glass);
+    backdrop-filter: blur(25px);
+    border: 1px solid var(--glass-border);
+    border-radius: 28px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 12px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08), var(--glow);
+    animation: revealCard 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .prediction-card::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: conic-gradient(from 0deg, transparent 0%, rgba(255,200,0,0.03) 15%, transparent 30%);
+    animation: rotateBg 20s linear infinite;
+  }
+
+  @keyframes rotateBg { to{transform:rotate(360deg)} }
+
+  .prediction-card.visible { display: block; }
+
+  @keyframes revealCard {
+    from { opacity:0; transform:scale(0.92) translateY(20px); }
+    to   { opacity:1; transform:scale(1) translateY(0); }
+  }
+
+  .pred-letter-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--saffron));
+    color: var(--deep-purple);
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    box-shadow: 0 0 30px rgba(255,200,0,0.5);
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .pred-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1rem, 3vw, 1.5rem);
+    color: var(--gold-light);
+    margin-bottom: 1.2rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .pred-text {
+    font-size: clamp(0.9rem, 2vw, 1.05rem);
+    line-height: 1.85;
+    color: rgba(255,255,255,0.88);
+    position: relative;
+    z-index: 1;
+  }
+
+  .pred-dob-section {
+    margin-top: 1.5rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid rgba(255,215,0,0.15);
+    position: relative;
+    z-index: 1;
+  }
+
+  .pred-dob-title {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+    opacity: 0.8;
+  }
+
+  .pred-dob-text {
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.7;
+  }
+
+  .action-row {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    margin-top: 1.8rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1.1rem;
+    border-radius: 50px;
+    border: 1px solid rgba(255,215,0,0.25);
+    background: rgba(255,215,0,0.06);
+    color: var(--gold-light);
+    font-size: 0.82rem;
+    font-family: 'Philosopher', serif;
+    cursor: pointer;
+    transition: all 0.3s;
+    letter-spacing: 0.05em;
+  }
+
+  .action-btn:hover {
+    background: rgba(255,215,0,0.15);
+    border-color: var(--gold);
+    box-shadow: 0 0 15px rgba(255,200,0,0.25);
+    transform: translateY(-2px);
+  }
+
+  .action-btn.active {
+    background: rgba(255,140,0,0.2);
+    border-color: var(--saffron);
+    color: var(--saffron);
+  }
+
+  /* Disclaimer */
+  .disclaimer {
+    max-width: 600px;
+    text-align: center;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.35);
+    padding: 1rem 1.5rem;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    margin-top: 1rem;
+    line-height: 1.6;
+  }
+
+  .disclaimer strong { color: var(--saffron); opacity: 0.7; }
+
+  /* Music toggle */
+  .music-btn {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: rgba(255,200,0,0.1);
+    border: 1px solid rgba(255,215,0,0.3);
+    color: var(--gold);
+    font-size: 1.3rem;
+    cursor: pointer;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    backdrop-filter: blur(10px);
+  }
+
+  .music-btn:hover {
+    background: rgba(255,200,0,0.2);
+    box-shadow: 0 0 20px rgba(255,200,0,0.3);
+  }
+
+  /* Error */
+  .error-msg {
+    color: #ff6b6b;
+    font-size: 0.82rem;
+    margin-top: 0.4rem;
+    display: none;
+  }
+
+  .error-msg.show { display: block; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--deep-purple); }
+  ::-webkit-scrollbar-thumb { background: rgba(255,200,0,0.3); border-radius: 2px; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(30,10,50,0.95);
+    border: 1px solid rgba(255,215,0,0.3);
+    color: var(--gold-light);
+    padding: 0.7rem 1.5rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    z-index: 600;
+    opacity: 0;
+    transition: all 0.4s;
+    backdrop-filter: blur(15px);
+    pointer-events: none;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Hindi mode */
+  .hindi-text {
+    display: none;
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-size: 0.95rem;
+    line-height: 2;
+    color: rgba(255,255,255,0.88);
+  }
+
+  .hindi-mode .pred-text { display: none; }
+  .hindi-mode .hindi-text { display: block; }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .form-card, .prediction-card { padding: 1.8rem 1.2rem; }
+    .action-row { gap: 0.5rem; }
+    .action-btn { padding: 0.55rem 0.85rem; font-size: 0.75rem; }
+  }
+
+  /* Number reading */
+  .num-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(255,140,0,0.25), rgba(255,215,0,0.1));
+    border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 8px;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.8rem;
+    color: var(--gold);
+    margin-right: 0.5rem;
+  }
+
+  .stars-bg-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(80,0,120,0.25) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(0,40,100,0.3) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 80%, rgba(120,0,60,0.15) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- Stars Canvas -->
+<canvas id="stars-canvas"></canvas>
+
+<!-- LOADER -->
+<div class="loader-overlay" id="loader">
+  <div class="lotus-spinner"></div>
+  <div class="loader-text">✨ Reading the cosmic patterns…</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MUSIC BUTTON -->
+<button class="music-btn" id="musicBtn" title="Toggle Background Music">🎵</button>
+
+<!-- ============ PAGE 1 ============ -->
+<section id="page1">
+  <div class="ganesha-bg"></div>
+
+  <div class="ganesha-img-container">
+    <div class="mandala-ring"></div>
+    <div class="mandala-ring"></div>
+    <div class="mandala-ring"></div>
+    <!-- Ganesha SVG Silhouette -->
+    <svg class="ganesha-silhouette" viewBox="0 0 400 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="ganeshaGlow" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stop-color="#ff8c00"/>
+          <stop offset="100%" stop-color="#f5c842" stop-opacity="0.4"/>
+        </radialGradient>
+      </defs>
+      <!-- Body -->
+      <ellipse cx="200" cy="340" rx="130" ry="160" fill="url(#ganeshaGlow)"/>
+      <!-- Head -->
+      <ellipse cx="200" cy="175" rx="90" ry="95" fill="url(#ganeshaGlow)"/>
+      <!-- Elephant trunk -->
+      <path d="M155 200 Q120 250 140 300 Q155 330 170 310 Q160 280 175 250 Q185 220 175 200Z" fill="url(#ganeshaGlow)"/>
+      <!-- Ears -->
+      <ellipse cx="120" cy="170" rx="45" ry="65" fill="url(#ganeshaGlow)" opacity="0.7"/>
+      <ellipse cx="280" cy="170" rx="45" ry="65" fill="url(#ganeshaGlow)" opacity="0.7"/>
+      <!-- Tusk -->
+      <path d="M240 215 Q280 200 290 170 Q295 155 285 150" stroke="#f5c842" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <!-- Crown -->
+      <path d="M130 130 Q150 80 200 70 Q250 80 270 130" stroke="#f5c842" stroke-width="4" fill="none"/>
+      <circle cx="200" cy="68" r="10" fill="#f5c842"/>
+      <circle cx="160" cy="95" r="6" fill="#f5c842"/>
+      <circle cx="240" cy="95" r="6" fill="#f5c842"/>
+      <!-- Arms -->
+      <ellipse cx="95" cy="310" rx="30" ry="55" fill="url(#ganeshaGlow)" opacity="0.7" transform="rotate(-15 95 310)"/>
+      <ellipse cx="305" cy="310" rx="30" ry="55" fill="url(#ganeshaGlow)" opacity="0.7" transform="rotate(15 305 310)"/>
+      <!-- Lotus feet -->
+      <ellipse cx="155" cy="490" rx="35" ry="18" fill="url(#ganeshaGlow)" opacity="0.6"/>
+      <ellipse cx="245" cy="490" rx="35" ry="18" fill="url(#ganeshaGlow)" opacity="0.6"/>
+      <!-- Third eye -->
+      <ellipse cx="200" cy="160" rx="12" ry="8" fill="#f5c842" opacity="0.8"/>
+      <!-- Om symbol on belly -->
+      <text x="200" y="350" text-anchor="middle" font-size="48" fill="#f5c842" opacity="0.6" font-family="serif">ॐ</text>
+    </svg>
+  </div>
+
+  <div class="diya-particles" id="diyaParticles"></div>
+
+  <div class="welcome-content">
+    <span class="om-symbol">ॐ</span>
+    <h1 class="welcome-title">Om Shree Ganeshaya Namah</h1>
+    <div class="welcome-subtitle">ॐ श्री गणेशाय नमः</div>
+    <div class="divider-line"></div>
+    <h2 class="welcome-title" style="font-size:clamp(0.9rem,2.5vw,1.6rem); margin-bottom:0.3rem;">भविष्य दर्पण</h2>
+    <p class="welcome-tagline">Future Mirror · Personality & Cosmic Prediction</p>
+  </div>
+
+  <a href="#page2" class="scroll-down-btn" id="scrollDownBtn">
+    <span>Discover</span>
+    <div class="scroll-arrow">⬇</div>
+  </a>
+</section>
+
+<!-- ============ PAGE 2 ============ -->
+<section id="page2">
+  <div class="stars-bg-overlay"></div>
+
+  <div class="page2-header">
+    <h2 class="page2-title">✨ Future Mirror ✨</h2>
+    <p class="page2-subtitle">Cosmic Personality Prediction by Name Letter</p>
+  </div>
+
+  <button class="cta-btn" id="seeBtn">🔮 See Your Future</button>
+
+  <div class="form-card" id="formCard">
+    <div class="form-group">
+      <label>First Letter of Your Name (A – Z)</label>
+      <input type="text" id="letterInput" maxlength="1" placeholder="e.g. A, B, C …" autocomplete="off"/>
+      <div class="error-msg" id="letterError">⚠ Please enter a valid letter A–Z</div>
+    </div>
+    <div class="form-group">
+      <label>Date of Birth</label>
+      <input type="date" id="dobInput"/>
+    </div>
+    <div class="btn-row">
+      <button class="submit-btn" id="submitBtn">✨ Reveal My Future</button>
+      <button class="reset-btn" id="resetBtn">↺ Reset</button>
+    </div>
+  </div>
+
+  <div class="prediction-card" id="predCard">
+    <div class="pred-letter-badge" id="predBadge">A</div>
+    <div class="pred-title" id="predTitle">Personality of Letter A</div>
+    <div class="pred-text" id="predText"></div>
+    <div class="hindi-text" id="predHindi"></div>
+
+    <div class="pred-dob-section" id="dobSection" style="display:none">
+      <div class="pred-dob-title">🌟 Your Cosmic Numbers</div>
+      <div class="pred-dob-text" id="dobInfo"></div>
+    </div>
+
+    <div class="action-row">
+      <button class="action-btn" id="listenBtn">🔊 Listen</button>
+      <button class="action-btn" id="translateBtn">🌐 हिंदी / English</button>
+      <button class="action-btn" id="shareWABtn">💬 WhatsApp</button>
+      <button class="action-btn" id="copyBtn">📋 Copy</button>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    <strong>⚠ Disclaimer:</strong> This is not 100% accurate. It is only for fun and general personality prediction. Take it as a source of positivity and inspiration, not as absolute truth.
+  </div>
+</section>
+
+<script>
+// ============ STARS BACKGROUND ============
+(function(){
+  const canvas = document.getElementById('stars-canvas');
+  const ctx = canvas.getContext('2d');
+  let stars = [], W, H;
+  function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  for(let i=0;i<220;i++){
+    stars.push({
+      x: Math.random()*2000,
+      y: Math.random()*2000,
+      r: Math.random()*1.5+0.3,
+      o: Math.random(),
+      s: Math.random()*0.005+0.002,
+      color: ['#ffffff','#ffe97a','#ffd700','#b0c4ff'][Math.floor(Math.random()*4)]
+    });
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const t = Date.now()*0.001;
+    stars.forEach(s=>{
+      const op = 0.3 + 0.7*Math.abs(Math.sin(t*s.s*10 + s.o*100));
+      ctx.beginPath();
+      ctx.arc((s.x%W),(s.y%H),s.r,0,Math.PI*2);
+      ctx.fillStyle = s.color;
+      ctx.globalAlpha = op*0.8;
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ============ SPARKS ============
+(function(){
+  const container = document.getElementById('diyaParticles');
+  for(let i=0;i<25;i++){
+    const s = document.createElement('div');
+    s.className = 'spark';
+    s.style.left = (20+Math.random()*60)+'%';
+    s.style.bottom = (5+Math.random()*30)+'%';
+    s.style.animationDuration = (2+Math.random()*4)+'s';
+    s.style.animationDelay = (Math.random()*4)+'s';
+    s.style.width = s.style.height = (2+Math.random()*3)+'px';
+    const colors = ['#f5c842','#ff8c00','#fff5b0','#ff4500'];
+    s.style.background = colors[Math.floor(Math.random()*colors.length)];
+    container.appendChild(s);
+  }
+})();
+
+// ============ PREDICTION DATA ============
+const predictions = {
+  A: {
+    title: "A (ए) — The Pioneer",
+    en: "The first letter of the English alphabet, A, is a powerful indicator of superior qualities. Individuals whose names begin with 'A' possess remarkable thoughts, deep virtues, and rich emotional depth. They are naturally creative, independent, and driven by ambition. They always wish to spread love, happiness, and positivity around them. These individuals lead with courage and vision, often becoming pioneers in their chosen fields. They have a magnetic personality that draws others toward them. Their determination and strong willpower help them overcome any obstacle life throws their way. They are natural-born leaders who inspire those around them.",
+    hi: "अंग्रेजी वर्णमाला का पहला अक्षर 'A' श्रेष्ठ गुणों का सूचक है। जिन लोगों के नाम का पहला अक्षर 'A' होता है, वे उत्तम विचारों, गुणों और भावनाओं से संपन्न होते हैं। वे स्वाभाविक रूप से रचनात्मक, स्वतंत्र और महत्वाकांक्षी होते हैं। वे हमेशा प्रेम और खुशी फैलाना चाहते हैं। ये लोग साहस और दृष्टि के साथ नेतृत्व करते हैं और अपने क्षेत्र में अग्रणी बनते हैं।"
+  },
+  B: {
+    title: "B (बी) — The Builder",
+    en: "People whose names start with 'B' are strong, dependable, and deeply loyal. They are natural builders — of relationships, careers, and communities. They have a calm, grounded energy that others find deeply comforting. Sensitive and intuitive by nature, they pick up on the emotions of those around them effortlessly. They are blessed with a sharp memory and a practical approach to life. These individuals are excellent team players who value cooperation and harmony. They have a deep love for family and home, and their nurturing nature makes them wonderful caregivers. Patience is their greatest virtue.",
+    hi: "'B' अक्षर वाले लोग मजबूत, विश्वसनीय और गहरे वफादार होते हैं। वे स्वाभाविक निर्माता हैं — रिश्तों, करियर और समुदायों के। उनमें शांत और स्थिर ऊर्जा होती है जो दूसरों को सुकून देती है। वे संवेदनशील और सहज ज्ञानी होते हैं। उनकी तेज स्मृति और व्यावहारिक दृष्टिकोण उन्हें विशेष बनाता है।"
+  },
+  C: {
+    title: "C (सी) — The Creative",
+    en: "Those born under the letter 'C' are blessed with exceptional creativity, charm, and communication skills. They have a natural gift for expression — whether through words, art, music, or ideas. They are charismatic individuals who light up any room they walk into. Highly imaginative and curious, they see the world through a lens of wonder and possibility. They are social butterflies who thrive on connection and conversation. Their optimistic outlook and cheerful disposition make them beloved by all who know them. They possess an innate talent for seeing beauty in the ordinary and transforming the mundane into the extraordinary.",
+    hi: "'C' अक्षर से शुरू होने वाले लोग असाधारण रचनात्मकता, आकर्षण और संचार कौशल से संपन्न होते हैं। वे अभिव्यक्ति में स्वाभाविक प्रतिभाशाली होते हैं — चाहे शब्दों, कला, संगीत या विचारों के माध्यम से। वे करिश्माई व्यक्तित्व के धनी होते हैं जो किसी भी कमरे को रोशन कर देते हैं।"
+  },
+  D: {
+    title: "D (डी) — The Determined",
+    en: "Individuals whose names begin with 'D' are known for their incredible determination, discipline, and practicality. They set their goals with precision and pursue them with relentless focus. Hardworking and responsible, they are the backbone of any team or family. They have a strong sense of duty and never shy away from taking on challenges. Grounded and realistic, they build their lives on solid foundations. These individuals are deeply principled and have a strong moral compass that guides their decisions. Their loyalty and commitment to those they love is unwavering and absolute.",
+    hi: "'D' अक्षर वाले लोग अपनी अविश्वसनीय दृढ़ता, अनुशासन और व्यावहारिकता के लिए जाने जाते हैं। वे अपने लक्ष्य सटीकता से निर्धारित करते हैं और उन्हें निरंतर प्रयास से पाते हैं। मेहनती और जिम्मेदार, वे किसी भी टीम या परिवार की रीढ़ होते हैं।"
+  },
+  E: {
+    title: "E (ई) — The Explorer",
+    en: "People with names starting with 'E' are adventurous, energetic, and endlessly curious. They have a burning desire to explore — new places, new ideas, and new experiences. Freedom is their greatest need, and they flourish when given room to roam and discover. Highly adaptable and versatile, they can thrive in almost any situation. They are excellent communicators with a gift for making complex ideas simple and accessible. Their enthusiasm is infectious, and they inspire everyone around them to live more fully. They are seekers of truth and meaning, always on a quest for deeper understanding.",
+    hi: "'E' अक्षर वाले लोग साहसी, ऊर्जावान और अनंत जिज्ञासु होते हैं। उनमें अन्वेषण की प्रबल इच्छा होती है — नए स्थानों, नए विचारों और नए अनुभवों की। स्वतंत्रता उनकी सबसे बड़ी जरूरत है। वे उत्कृष्ट संचारक होते हैं और जटिल विचारों को सरल बनाने में माहिर होते हैं।"
+  },
+  F: {
+    title: "F (एफ) — The Faithful",
+    en: "Those whose names begin with 'F' are faithful, family-oriented, and deeply nurturing. They have a profound love for their home and those within it. They are the natural caregivers of the world — always ready with a warm embrace, wise counsel, and unwavering support. Their sense of responsibility is extraordinary, and they often put others' needs before their own. They have a beautiful artistic sensitivity and an appreciation for all things harmonious and beautiful. Balanced and fair-minded, they seek justice and peace in all aspects of their lives.",
+    hi: "'F' अक्षर वाले लोग वफादार, परिवार-उन्मुख और गहरे पोषणकारी होते हैं। उन्हें अपने घर और परिवार से गहरा प्यार होता है। वे दुनिया के स्वाभाविक देखभालकर्ता हैं — हमेशा एक गर्म आलिंगन, बुद्धिमान सलाह और अटूट समर्थन के साथ तैयार रहते हैं।"
+  },
+  G: {
+    title: "G (जी) — The Gifted",
+    en: "Individuals with 'G' as their name initial are gifted, gracious, and guided by deep inner wisdom. They possess exceptional analytical abilities and can see through complexity to find elegant solutions. Their mind is sharp, quick, and constantly in search of knowledge and truth. They have a deep connection to their spirituality and often seek meaning beyond the material world. Highly intuitive, they often know things before they can explain why. They are generous with their time, knowledge, and resources. Their humility, despite their many gifts, makes them truly extraordinary human beings.",
+    hi: "'G' अक्षर वाले लोग प्रतिभाशाली, कृपालु और गहरी आंतरिक बुद्धि से निर्देशित होते हैं। उनमें असाधारण विश्लेषणात्मक क्षमताएं होती हैं और वे जटिलता में से सुंदर समाधान खोज लेते हैं। उनका मन तेज, चुस्त और हमेशा ज्ञान और सच्चाई की खोज में रहता है।"
+  },
+  H: {
+    title: "H (एच) — The Honorable",
+    en: "People whose names start with 'H' are honorable, hardworking, and deeply humanitarian. They carry a strong sense of integrity that permeates every aspect of their lives. They are independent thinkers who forge their own path with confidence and determination. Their ambition is matched only by their work ethic — they will outwork everyone in the room. They have a natural talent for leadership and management, often rising to positions of authority. Despite their success, they remain humble and grounded. Their empathy for others and desire to make the world a better place defines their legacy.",
+    hi: "'H' अक्षर वाले लोग सम्मानजनक, मेहनती और गहरे मानवतावादी होते हैं। वे अपने जीवन के हर पहलू में ईमानदारी की मजबूत भावना रखते हैं। वे स्वतंत्र विचारक हैं जो आत्मविश्वास और दृढ़ संकल्प के साथ अपना मार्ग बनाते हैं।"
+  },
+  I: {
+    title: "I (आई) — The Idealist",
+    en: "Those with 'I' as their first letter are idealistic, imaginative, and intensely intelligent. They are deep thinkers who are constantly seeking to understand the deeper truths of existence. They have a rich inner world and a powerful creative imagination. Compassionate and empathetic, they feel the suffering of others deeply and are motivated to help. They are visionaries who can see what others cannot, and their ideas often change the world. They have an extraordinary sensitivity to beauty — in art, music, nature, and human connection. Their idealism, while sometimes leaving them open to disappointment, also fuels their remarkable achievements.",
+    hi: "'I' अक्षर वाले लोग आदर्शवादी, कल्पनाशील और अत्यंत बुद्धिमान होते हैं। वे गहरे विचारक हैं जो लगातार अस्तित्व की गहरी सच्चाइयों को समझने की कोशिश करते हैं। उनका आंतरिक जगत समृद्ध और उनकी रचनात्मक कल्पना शक्तिशाली होती है।"
+  },
+  J: {
+    title: "J (जे) — The Joyful",
+    en: "People whose names begin with 'J' radiate joy, justice, and a jubilant spirit. They have a natural charisma and an infectious enthusiasm that brings light to every gathering. They are natural entertainers and storytellers who can hold any audience captivated. Their sense of humor is sharp and their laughter is contagious. They are deeply fair-minded and passionate about justice, always standing up for what is right. They have a restless, adventurous spirit and a love of travel and new experiences. Despite their outgoing nature, they have a deeply thoughtful and philosophical interior.",
+    hi: "'J' अक्षर वाले लोग आनंद, न्याय और उत्साही भावना से चमकते हैं। उनमें एक स्वाभाविक करिश्मा और संक्रामक उत्साह होता है जो हर मेल-मिलाप में रोशनी लाता है। वे स्वाभाविक मनोरंजनकर्ता और कहानीकार हैं जो किसी भी दर्शक को मोहित कर सकते हैं।"
+  },
+  K: {
+    title: "K (के) — The Knowledgeable",
+    en: "Individuals with 'K' as their initial are knowledgeable, kind-hearted, and keenly perceptive. They have an insatiable thirst for knowledge and a mind that never stops learning. They are highly intuitive and can read people and situations with remarkable accuracy. Their kindness is one of their greatest strengths — they give generously without expectation of anything in return. They are natural counselors and healers, and people are drawn to them for guidance and comfort. Their wisdom, though sometimes born of hardship, shines brightly and guides others. They are resilient, rising from every fall stronger than before.",
+    hi: "'K' अक्षर वाले लोग ज्ञानवान, दयालु और तीव्र बोधशील होते हैं। उनमें ज्ञान की अतृप्त प्यास और एक ऐसा मन होता है जो सीखना कभी नहीं बंद करता। वे अत्यंत सहज ज्ञानी होते हैं और लोगों और परिस्थितियों को उल्लेखनीय सटीकता के साथ पढ़ सकते हैं।"
+  },
+  L: {
+    title: "L (एल) — The Luminous",
+    en: "Those whose names begin with 'L' are luminous, loving, and deeply loyal. They have a natural grace and elegance that sets them apart from the crowd. They are deeply romantic and believe in true love with all their heart. Their sense of aesthetics is exquisite — they appreciate beauty, art, music, and the finer things in life. They are diplomatic and skilled at bringing people together and resolving conflicts. Their intelligence is balanced beautifully between logic and emotion. They are gifted writers, speakers, and artists. The love they give is pure, deep, and unconditional.",
+    hi: "'L' अक्षर वाले लोग प्रकाशमान, प्रेमपूर्ण और गहरे वफादार होते हैं। उनमें एक स्वाभाविक कृपा और लालित्य होता है जो उन्हें भीड़ से अलग करता है। वे गहरे रोमांटिक हैं और सच्चे प्यार में पूरे दिल से विश्वास करते हैं। उनका सौंदर्य बोध उत्कृष्ट होता है।"
+  },
+  M: {
+    title: "M (एम) — The Magnificent",
+    en: "People with 'M' as their first letter are magnificent, motivated, and deeply mystical. They are driven by an inner fire that compels them to achieve great things. They are natural leaders and visionaries who can inspire large groups of people to work toward a common goal. They have a powerful intuition and often experience vivid dreams and deep spiritual insights. Their emotional depth is extraordinary — they feel everything intensely, which fuels their remarkable empathy and creativity. They are fiercely protective of their loved ones. Their determination to succeed against all odds makes them one of the most powerful forces in the zodiac of letters.",
+    hi: "'M' अक्षर वाले लोग शानदार, प्रेरित और गहरे रहस्यवादी होते हैं। उन्हें एक आंतरिक अग्नि प्रेरित करती है जो उन्हें महान कार्य करने के लिए बाध्य करती है। वे स्वाभाविक नेता और दूरदर्शी हैं। उनकी भावनात्मक गहराई असाधारण है — वे सब कुछ तीव्रता से महसूस करते हैं।"
+  },
+  N: {
+    title: "N (एन) — The Noble",
+    en: "Individuals whose names start with 'N' are noble, nurturing, and naturally intelligent. They have a brilliant, innovative mind that is always generating new ideas and creative solutions. They are excellent at thinking outside the box and approaching challenges from unique angles. Their charm is quiet but undeniable, and they have a magnetic quality that draws people to them effortlessly. They are deeply devoted to their work and take great pride in doing everything to the best of their ability. They have a strong spiritual side and often find meaning through meditation, nature, or creative expression.",
+    hi: "'N' अक्षर वाले लोग कुलीन, पोषणकारी और स्वाभाविक रूप से बुद्धिमान होते हैं। उनका एक शानदार, अभिनव मन होता है जो हमेशा नए विचार और रचनात्मक समाधान उत्पन्न करता है। वे चुनौतियों को अद्वितीय कोणों से देखने में उत्कृष्ट होते हैं।"
+  },
+  O: {
+    title: "O (ओ) — The Optimist",
+    en: "Those with 'O' as their name initial are optimistic, open-hearted, and overflowing with warmth. They have a beautiful, generous spirit that sees the best in everyone and every situation. Their optimism is not naive — it is a conscious choice, a superpower they wield to transform darkness into light. They are natural philanthropists who feel a deep responsibility to contribute to society. Highly sociable and warm, they make everyone feel included and valued. They have a deep love for culture, travel, music, and the arts. Their innate wisdom and open-mindedness make them beloved teachers and mentors.",
+    hi: "'O' अक्षर वाले लोग आशावादी, खुले दिल वाले और गर्मजोशी से भरे होते हैं। उनमें एक सुंदर, उदार भावना होती है जो हर किसी में और हर स्थिति में सर्वश्रेष्ठ देखती है। उनका आशावाद भोला नहीं है — यह एक सचेत विकल्प है, एक महाशक्ति है।"
+  },
+  P: {
+    title: "P (पी) — The Profound",
+    en: "People whose names begin with 'P' are profound thinkers, passionate achievers, and deeply perceptive souls. They have a powerful, penetrating intellect that can cut through confusion to find clarity. They are highly ambitious and strive for excellence in everything they do. They have a natural charisma and the ability to inspire others with their vision and passion. They are extremely capable of handling complex projects and multi-faceted challenges. They have a deep appreciation for knowledge and often become experts in their chosen fields. Their passion, when channeled correctly, has the power to move mountains.",
+    hi: "'P' अक्षर वाले लोग गहरे विचारक, भावुक उपलब्धिकर्ता और गहरे बोधशील आत्माएं होते हैं। उनमें एक शक्तिशाली, भेदक बुद्धि होती है जो भ्रम को काटकर स्पष्टता खोज सकती है। वे अत्यंत महत्वाकांक्षी हैं और हर काम में उत्कृष्टता के लिए प्रयास करते हैं।"
+  },
+  Q: {
+    title: "Q (क्यू) — The Quintessential",
+    en: "Rare and remarkable, those with 'Q' as their initial are truly one-of-a-kind individuals. They possess a unique blend of intelligence, creativity, and quiet strength that sets them apart from everyone around them. They think in ways that others cannot comprehend, seeing patterns and connections that remain invisible to ordinary minds. They are intensely private but intensely loyal to those they let into their inner circle. They have a mysterious quality that draws people to them with curiosity. They are often pioneers in their fields, bringing entirely new approaches that transform entire industries. Their unique perspective is their greatest gift.",
+    hi: "'Q' अक्षर वाले लोग अपने आप में अनोखे और उल्लेखनीय व्यक्ति होते हैं। वे बुद्धि, रचनात्मकता और शांत शक्ति का एक अनूठा मिश्रण रखते हैं। वे ऐसे तरीकों से सोचते हैं जो दूसरे नहीं समझ सकते। वे अत्यंत निजी लेकिन अत्यंत वफादार होते हैं।"
+  },
+  R: {
+    title: "R (आर) — The Resilient",
+    en: "Individuals whose names start with 'R' are resilient, resourceful, and radiantly charismatic. They have a remarkable ability to bounce back from adversity stronger and wiser than before. Life may bend them, but it will never break them. They are natural problem-solvers with a practical, inventive mind that finds solutions where others see only obstacles. They are passionate and romantic, with a deep capacity for love and connection. They have natural leadership abilities and often find themselves in positions of influence. Their courage and determination in the face of challenge is an inspiration to all who know them.",
+    hi: "'R' अक्षर वाले लोग लचीले, साधन-संपन्न और उज्ज्वल रूप से करिश्माई होते हैं। उनमें विपत्ति से पहले से अधिक मजबूत और बुद्धिमान होकर उठने की उल्लेखनीय क्षमता होती है। जीवन उन्हें झुका सकता है, लेकिन तोड़ नहीं सकता।"
+  },
+  S: {
+    title: "S (एस) — The Spiritual",
+    en: "Those whose names begin with 'S' are spiritual, sensitive, and supremely intuitive. They have a deep connection to the divine and often experience the world through a mystical, meaningful lens. Their emotional intelligence is off the charts — they understand people and situations with extraordinary depth and nuance. They are highly creative and often express their inner world through art, music, writing, or spirituality. They are passionate and magnetic, drawing others to them with an irresistible force. They have a natural gift for healing and helping others transform. When they find their purpose, they pursue it with a devotion that is nothing short of sacred.",
+    hi: "'S' अक्षर वाले लोग आध्यात्मिक, संवेदनशील और सर्वोच्च सहज ज्ञानी होते हैं। उनका दिव्य से गहरा संबंध होता है और वे अक्सर दुनिया को एक रहस्यमय, अर्थपूर्ण नजरिए से अनुभव करते हैं। उनकी भावनात्मक बुद्धिमत्ता असाधारण होती है।"
+  },
+  T: {
+    title: "T (टी) — The Tenacious",
+    en: "People with 'T' as their first letter are tenacious, truthful, and tremendously talented. They have a natural ability to grasp complex concepts quickly and apply them practically. They are determined and steadfast — once they set their mind to something, nothing can stop them. They are deeply principled individuals with a powerful sense of right and wrong. They are excellent communicators and have a natural ability to teach, mentor, and inspire others. They are detail-oriented perfectionists who take great pride in their work. Their integrity is unshakeable, and their word is their bond.",
+    hi: "'T' अक्षर वाले लोग दृढ़, सत्यनिष्ठ और अत्यंत प्रतिभाशाली होते हैं। उनमें जटिल अवधारणाओं को जल्दी समझने और व्यावहारिक रूप से लागू करने की स्वाभाविक क्षमता होती है। एक बार जब वे कुछ ठान लेते हैं, तो कोई उन्हें नहीं रोक सकता।"
+  },
+  U: {
+    title: "U (यू) — The Unique",
+    en: "Individuals whose names start with 'U' are uniquely gifted, understanding, and undeniably charming. They have a universal quality — they can connect with people from all walks of life and make everyone feel understood and valued. They are deeply humanitarian and often drawn to work that benefits society at large. They are progressive thinkers who embrace change and innovation with enthusiasm. They have a deep artistic sensibility and are often drawn to creative pursuits. Their open-mindedness and acceptance of others makes them truly beloved in their communities. They are visionaries who see a better world and work to create it.",
+    hi: "'U' अक्षर वाले लोग अनोखे रूप से प्रतिभाशाली, समझदार और निर्विवाद रूप से आकर्षक होते हैं। उनमें एक सार्वभौमिक गुण होता है — वे जीवन के हर क्षेत्र के लोगों से जुड़ सकते हैं। वे गहरे मानवतावादी हैं और अक्सर समाज को लाभ पहुंचाने वाले काम की ओर आकर्षित होते हैं।"
+  },
+  V: {
+    title: "V (वी) — The Visionary",
+    en: "Those with 'V' as their name initial are visionary, vibrant, and values-driven. They see possibilities where others see limitations and have the courage to pursue their dreams relentlessly. They are natural entrepreneurs and innovators who thrive on creating something from nothing. They have a powerful personal magnetism and a gift for inspiring loyalty and devotion in others. They are deeply principled and will not compromise on their core values for any reward. They have an adventurous, free spirit that cannot be confined. Their vibrant energy and enthusiasm for life is absolutely contagious.",
+    hi: "'V' अक्षर वाले लोग दूरदर्शी, जीवंत और मूल्य-संचालित होते हैं। वे वहां संभावनाएं देखते हैं जहां दूसरे सीमाएं देखते हैं और अपने सपनों को निर्ममता से पूरा करने का साहस रखते हैं। वे स्वाभाविक उद्यमी और नवप्रवर्तक हैं।"
+  },
+  W: {
+    title: "W (डब्ल्यू) — The Wise",
+    en: "People whose names begin with 'W' are wise, warm, and wonderfully creative. They have a natural wisdom that often exceeds their years — people are drawn to them for advice and perspective. They are incredibly versatile and adaptable, able to succeed in many different arenas. They have a deep love for knowledge, travel, and exploration of both the outer world and the inner landscape. They are social and communicative, with a gift for bringing together diverse groups of people. They are deeply idealistic and believe strongly in the potential of human beings to create a better world. Their warmth and wisdom make them extraordinary friends and partners.",
+    hi: "'W' अक्षर वाले लोग बुद्धिमान, गर्म और अद्भुत रूप से रचनात्मक होते हैं। उनमें एक स्वाभाविक बुद्धि होती है जो अक्सर उनकी उम्र से परे होती है। वे अविश्वसनीय रूप से बहुमुखी और अनुकूलनीय हैं। ज्ञान, यात्रा और अन्वेषण के प्रति उनका गहरा प्रेम है।"
+  },
+  X: {
+    title: "X (एक्स) — The Extraordinary",
+    en: "Extraordinary and exceedingly rare, those with 'X' as their initial are truly remarkable beings. They defy categorization and resist every attempt to define them by conventional standards. They are highly unconventional, brilliantly creative, and ahead of their time in almost every way. They have a fascinating, magnetic personality that leaves a lasting impression on everyone they meet. They are intensely private but intensely passionate. They possess rare talents that are recognized and celebrated by those perceptive enough to see them. They are the artists, rebels, mystics, and geniuses of the world — those who change everything simply by being themselves.",
+    hi: "'X' अक्षर वाले लोग असाधारण और अत्यंत दुर्लभ होते हैं। वे वर्गीकरण को चुनौती देते हैं और पारंपरिक मानकों से परिभाषित होने का विरोध करते हैं। वे अत्यंत अपरंपरागत, प्रतिभाशाली रूप से रचनात्मक और लगभग हर तरह से अपने समय से आगे हैं।"
+  },
+  Y: {
+    title: "Y (वाई) — The Yearning",
+    en: "Individuals whose names start with 'Y' are yearning for depth, truth, and authentic connection. They have a beautiful, complex inner life that fuels their extraordinary creativity and spiritual depth. They are deep thinkers and feelers who experience life with remarkable intensity. They have a natural ability to inspire others through their authentic, unfiltered self-expression. They are often torn between multiple paths, but once they find their calling, they pursue it with complete devotion. They have a powerful intuition and a gift for understanding the human psyche. Their sensitivity, far from being a weakness, is the source of their extraordinary power.",
+    hi: "'Y' अक्षर वाले लोग गहराई, सत्य और प्रामाणिक संबंध की चाह रखते हैं। उनका एक सुंदर, जटिल आंतरिक जीवन होता है जो उनकी असाधारण रचनात्मकता और आध्यात्मिक गहराई को प्रेरित करता है। वे गहरे विचारक और भावशाली होते हैं।"
+  },
+  Z: {
+    title: "Z (जेड) — The Zealous",
+    en: "Those with 'Z' as their first letter are zealous, dynamic, and full of infectious enthusiasm. They approach life with an energy and intensity that is absolutely unparalleled. They are natural innovators and disruptors who thrive on breaking the mold and creating entirely new paradigms. They have razor-sharp minds and an extraordinary ability to synthesize information from multiple sources into breakthrough insights. They are passionate advocates for their beliefs and will fight fiercely for justice and truth. Despite their powerful exterior, they have a deeply sensitive, caring heart. Their zeal and authenticity make them unforgettable and irreplaceable.",
+    hi: "'Z' अक्षर वाले लोग उत्साही, गतिशील और संक्रामक उत्साह से भरे होते हैं। वे जीवन को एक ऊर्जा और तीव्रता के साथ अपनाते हैं जो बिल्कुल अतुलनीय है। वे स्वाभाविक नवप्रवर्तक और विघ्नकर्ता हैं जो नए प्रतिमान बनाने में पारंगत हैं।"
+  }
+};
+
+// ============ DOB ANALYSIS ============
+function analyzeDOB(dobStr) {
+  if (!dobStr) return null;
+  const d = new Date(dobStr);
+  if (isNaN(d)) return null;
+  const day = d.getDate();
+  const month = d.getMonth() + 1;
+  const year = d.getFullYear();
+  const digits = (day + month + year).toString().split('').map(Number);
+  let lifeNum = digits.reduce((a,b)=>a+b,0);
+  while (lifeNum > 9) {
+    lifeNum = lifeNum.toString().split('').map(Number).reduce((a,b)=>a+b,0);
+  }
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const zodiac = getZodiac(day, month);
+  const lifeNums = {
+    1:'Leadership, independence, new beginnings',
+    2:'Partnership, balance, sensitivity',
+    3:'Creativity, joy, self-expression',
+    4:'Stability, discipline, hard work',
+    5:'Freedom, adventure, change',
+    6:'Harmony, nurturing, responsibility',
+    7:'Wisdom, spirituality, introspection',
+    8:'Power, ambition, material success',
+    9:'Compassion, humanitarianism, completion'
+  };
+  return `🗓 Born: ${day} ${months[month-1]} ${year} &nbsp;|&nbsp; ♈ Zodiac: <strong>${zodiac}</strong><br>
+          🔢 Life Path Number: <span class="num-badge">${lifeNum}</span> <em>${lifeNums[lifeNum]||''}</em>`;
+}
+
+function getZodiac(d, m) {
+  if((m==1&&d>=20)||(m==2&&d<=18)) return 'Aquarius ♒';
+  if((m==2&&d>=19)||(m==3&&d<=20)) return 'Pisces ♓';
+  if((m==3&&d>=21)||(m==4&&d<=19)) return 'Aries ♈';
+  if((m==4&&d>=20)||(m==5&&d<=20)) return 'Taurus ♉';
+  if((m==5&&d>=21)||(m==6&&d<=20)) return 'Gemini ♊';
+  if((m==6&&d>=21)||(m==7&&d<=22)) return 'Cancer ♋';
+  if((m==7&&d>=23)||(m==8&&d<=22)) return 'Leo ♌';
+  if((m==8&&d>=23)||(m==9&&d<=22)) return 'Virgo ♍';
+  if((m==9&&d>=23)||(m==10&&d<=22)) return 'Libra ♎';
+  if((m==10&&d>=23)||(m==11&&d<=21)) return 'Scorpio ♏';
+  if((m==11&&d>=22)||(m==12&&d<=21)) return 'Sagittarius ♐';
+  return 'Capricorn ♑';
+}
+
+// ============ STATE ============
+let currentPrediction = null;
+let isHindi = false;
+let isSpeaking = false;
+let musicPlaying = false;
+let audioCtx = null;
+let musicNodes = [];
+
+// ============ ELEMENTS ============
+const seeBtn = document.getElementById('seeBtn');
+const formCard = document.getElementById('formCard');
+const letterInput = document.getElementById('letterInput');
+const dobInput = document.getElementById('dobInput');
+const submitBtn = document.getElementById('submitBtn');
+const resetBtn = document.getElementById('resetBtn');
+const predCard = document.getElementById('predCard');
+const predBadge = document.getElementById('predBadge');
+const predTitle = document.getElementById('predTitle');
+const predText = document.getElementById('predText');
+const predHindi = document.getElementById('predHindi');
+const dobSection = document.getElementById('dobSection');
+const dobInfo = document.getElementById('dobInfo');
+const listenBtn = document.getElementById('listenBtn');
+const translateBtn = document.getElementById('translateBtn');
+const shareWABtn = document.getElementById('shareWABtn');
+const copyBtn = document.getElementById('copyBtn');
+const loader = document.getElementById('loader');
+const letterError = document.getElementById('letterError');
+const musicBtn = document.getElementById('musicBtn');
+
+// ============ SHOW FORM ============
+seeBtn.addEventListener('click', ()=>{
+  formCard.classList.add('visible');
+  seeBtn.style.display = 'none';
+  formCard.scrollIntoView({behavior:'smooth', block:'center'});
+});
+
+// ============ SUBMIT ============
+submitBtn.addEventListener('click', ()=>{
+  const raw = letterInput.value.trim().toUpperCase();
+  if (!raw || !/^[A-Z]$/.test(raw)) {
+    letterError.classList.add('show');
+    letterInput.focus();
+    return;
+  }
+  letterError.classList.remove('show');
+
+  // Show loader
+  loader.classList.add('active');
+
+  setTimeout(()=>{
+    loader.classList.remove('active');
+    showPrediction(raw, dobInput.value);
+  }, 1800);
+});
+
+letterInput.addEventListener('input', ()=>{
+  letterError.classList.remove('show');
+  letterInput.value = letterInput.value.toUpperCase();
+});
+
+// ============ SHOW PREDICTION ============
+function showPrediction(letter, dob) {
+  const data = predictions[letter];
+  if (!data) return;
+  currentPrediction = { letter, data, dob };
+  isHindi = false;
+
+  predBadge.textContent = letter;
+  predTitle.textContent = data.title;
+  predText.innerHTML = data.en;
+  predHindi.innerHTML = data.hi;
+  predCard.classList.remove('hindi-mode');
+
+  // DOB
+  const dobAnalysis = analyzeDOB(dob);
+  if (dobAnalysis) {
+    dobInfo.innerHTML = dobAnalysis;
+    dobSection.style.display = 'block';
+  } else {
+    dobSection.style.display = 'none';
+  }
+
+  predCard.classList.add('visible');
+  predCard.style.display = 'block';
+  requestAnimationFrame(()=>{
+    predCard.scrollIntoView({behavior:'smooth', block:'start'});
+  });
+}
+
+// ============ RESET ============
+resetBtn.addEventListener('click', ()=>{
+  letterInput.value = '';
+  dobInput.value = '';
+  predCard.classList.remove('visible');
+  predCard.style.display = 'none';
+  letterError.classList.remove('show');
+  isHindi = false;
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  currentPrediction = null;
+});
+
+// ============ LISTEN (TTS) ============
+listenBtn.addEventListener('click', ()=>{
+  if (!currentPrediction) return;
+  if (!window.speechSynthesis) { showToast('Speech not supported in this browser'); return; }
+  if (isSpeaking) {
+    speechSynthesis.cancel();
+    isSpeaking = false;
+    listenBtn.classList.remove('active');
+    listenBtn.innerHTML = '🔊 Listen';
+    return;
+  }
+  const text = isHindi ? currentPrediction.data.hi : currentPrediction.data.en;
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = isHindi ? 'hi-IN' : 'en-US';
+  utt.rate = 0.9;
+  utt.pitch = 1.05;
+  utt.onstart = ()=>{
+    isSpeaking = true;
+    listenBtn.classList.add('active');
+    listenBtn.innerHTML = '⏹ Stop';
+  };
+  utt.onend = utt.onerror = ()=>{
+    isSpeaking = false;
+    listenBtn.classList.remove('active');
+    listenBtn.innerHTML = '🔊 Listen';
+  };
+  speechSynthesis.speak(utt);
+});
+
+// ============ TRANSLATE ============
+translateBtn.addEventListener('click', ()=>{
+  if (!currentPrediction) return;
+  isHindi = !isHindi;
+  if (isHindi) {
+    predCard.classList.add('hindi-mode');
+    translateBtn.innerHTML = '🌐 English';
+    translateBtn.classList.add('active');
+    showToast('हिंदी में अनुवादित किया गया ✓');
+  } else {
+    predCard.classList.remove('hindi-mode');
+    translateBtn.innerHTML = '🌐 हिंदी / English';
+    translateBtn.classList.remove('active');
+    showToast('Translated to English ✓');
+  }
+  if (isSpeaking) {
+    speechSynthesis.cancel();
+    isSpeaking = false;
+    listenBtn.classList.remove('active');
+    listenBtn.innerHTML = '🔊 Listen';
+  }
+});
+
+// ============ WHATSAPP SHARE ============
+shareWABtn.addEventListener('click', ()=>{
+  if (!currentPrediction) return;
+  const msg = `✨ *भविष्य दर्पण — Future Mirror* ✨\n\n${currentPrediction.data.title}\n\n${currentPrediction.data.en}\n\n⚠️ For fun only. Not 100% accurate.`;
+  const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+});
+
+// ============ COPY ============
+copyBtn.addEventListener('click', ()=>{
+  if (!currentPrediction) return;
+  const text = `${currentPrediction.data.title}\n\n${isHindi ? currentPrediction.data.hi : currentPrediction.data.en}`;
+  navigator.clipboard.writeText(text).then(()=>{
+    showToast('📋 Copied to clipboard!');
+    copyBtn.innerHTML = '✅ Copied!';
+    setTimeout(()=>{ copyBtn.innerHTML = '📋 Copy'; }, 2000);
+  }).catch(()=> showToast('Copy failed. Please select text manually.'));
+});
+
+// ============ TOAST ============
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=> t.classList.remove('show'), 2800);
+}
+
+// ============ BACKGROUND MUSIC (Web Audio) ============
+function createBinauralMusic() {
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const masterGain = audioCtx.createGain();
+  masterGain.gain.value = 0.06;
+  masterGain.connect(audioCtx.destination);
+
+  // Tibetan-like drone notes
+  const freqs = [136.1, 144, 288, 432]; // OM frequency approx
+  freqs.forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.type = i < 2 ? 'sine' : 'triangle';
+    osc.frequency.value = freq;
+    g.gain.value = i < 2 ? 0.4 : 0.15;
+    osc.connect(g);
+    g.connect(masterGain);
+    osc.start();
+    musicNodes.push(osc);
+  });
+
+  // Gentle bell-like tones at random intervals
+  function bell() {
+    if (!musicPlaying || !audioCtx) return;
+    const bellOsc = audioCtx.createOscillator();
+    const bellGain = audioCtx.createGain();
+    bellOsc.type = 'sine';
+    bellOsc.frequency.value = [528, 639, 741, 852][Math.floor(Math.random()*4)];
+    bellGain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+    bellGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 3);
+    bellOsc.connect(bellGain);
+    bellGain.connect(masterGain);
+    bellOsc.start();
+    bellOsc.stop(audioCtx.currentTime + 3);
+    setTimeout(bell, 4000 + Math.random()*6000);
+  }
+  setTimeout(bell, 2000);
+}
+
+musicBtn.addEventListener('click', async ()=>{
+  if (!musicPlaying) {
+    try {
+      if (!audioCtx) createBinauralMusic();
+      else await audioCtx.resume();
+      musicPlaying = true;
+      musicBtn.textContent = '🔇';
+      musicBtn.title = 'Stop Music';
+      showToast('🎵 Cosmic meditation music playing…');
+    } catch(e) { showToast('Audio not supported'); }
+  } else {
+    if (audioCtx) audioCtx.suspend();
+    musicPlaying = false;
+    musicBtn.textContent = '🎵';
+    musicBtn.title = 'Toggle Background Music';
+    showToast('🔇 Music paused');
+  }
+});
+
+// ============ SCROLL ANIMATION ============
+document.getElementById('scrollDownBtn').addEventListener('click', (e)=>{
+  e.preventDefault();
+  document.getElementById('page2').scrollIntoView({behavior:'smooth'});
+});
+
+// Enter key support
+document.addEventListener('keydown', (e)=>{
+  if (e.key === 'Enter' && formCard.classList.contains('visible')) {
+    submitBtn.click();
+  }
+});
+</script>
+</body>
+</html>
