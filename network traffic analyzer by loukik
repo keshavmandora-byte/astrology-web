@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>NetScope | Packet Sniffer & Network Traffic Analyzer</title>
+    <!-- Google Fonts + Chart.js + Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0c12;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        /* Animated network background (moving dots) */
+        .network-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: radial-gradient(circle at 20% 30%, #0b1120, #03050a);
+        }
+
+        .network-bg::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background-image: radial-gradient(circle, #22ff88 1px, transparent 1px);
+            background-size: 45px 45px;
+            animation: drift 50s linear infinite;
+            opacity: 0.2;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0,0); }
+            100% { transform: translate(80px, 80px); }
+        }
+
+        /* Glow */
+        .glow-text {
+            text-shadow: 0 0 5px #00ffaa, 0 0 10px #00cc88;
+        }
+
+        .btn-neon {
+            background: transparent;
+            border: 1.5px solid #00ffaa;
+            color: #00ffaa;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .btn-neon:hover {
+            background: #00ffaa20;
+            box-shadow: 0 0 12px #00ffaa80;
+            transform: scale(1.02);
+        }
+
+        .btn-primary-solid {
+            background: #00ffaa;
+            border: none;
+            color: #0a0c12;
+            font-weight: bold;
+            padding: 10px 28px;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+
+        .card-glass {
+            background: rgba(18, 24, 34, 0.75);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid rgba(0, 255, 170, 0.25);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            background: #0a0c12dd;
+            backdrop-filter: blur(16px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #00ffaa40;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #00ffaa;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.8rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #ddd;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover { color: #00ffaa; }
+
+        /* sections */
+        section {
+            padding: 70px 5%;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            border-left: 5px solid #00ffaa;
+            padding-left: 20px;
+        }
+
+        /* dashboard cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #11161f;
+            padding: 1.2rem;
+            border-radius: 20px;
+            text-align: center;
+            border-bottom: 2px solid #00ffaa;
+        }
+
+        .stat-num {
+            font-size: 2.3rem;
+            font-weight: 800;
+            color: #00ffaa;
+        }
+
+        /* packet table */
+        .packet-table-container {
+            overflow-x: auto;
+            background: #0e121b;
+            border-radius: 24px;
+            padding: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid #2a2f3a;
+        }
+
+        th {
+            color: #00ffaa;
+        }
+
+        tr:hover {
+            background: #1a212e;
+            cursor: pointer;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        input, select {
+            background: #1a1f2a;
+            border: 1px solid #2e3a48;
+            padding: 8px 14px;
+            border-radius: 40px;
+            color: white;
+        }
+
+        /* details panel */
+        .details-panel {
+            margin-top: 25px;
+            background: #0b1018cc;
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
+            padding: 20px;
+        }
+
+        .charts-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .chart-box {
+            flex: 1;
+            min-width: 250px;
+            background: #11161f;
+            padding: 1rem;
+            border-radius: 24px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid #00ffaa30;
+            background: #05070c;
+        }
+        @media (max-width: 800px) {
+            .nav-links { gap: 1rem; font-size: 0.8rem; }
+        }
+        .ai-insight {
+            background: #05200f;
+            border-left: 5px solid #00ffaa;
+            padding: 15px;
+            border-radius: 18px;
+        }
+        i.fa, i.fas {
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body>
+<div class="network-bg"></div>
+
+<nav class="navbar">
+    <div class="logo"><i class="fas fa-shield-alt"></i> NetScope</div>
+    <div class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#analyzer">Packet Analyzer</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#protocol-guide">Protocol Guide</a>
+        <a href="#learning">Learning</a>
+        <a href="#scapy">Scapy</a>
+        <a href="#about">About</a>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section id="home" style="min-height: 90vh; display: flex; align-items: center;">
+    <div>
+        <h1 style="font-size: 3.5rem; font-weight: 800;">Network Traffic Analyzer <br> & <span class="glow-text">Packet Sniffer</span></h1>
+        <p style="font-size: 1.2rem; margin: 20px 0; max-width: 700px;">Capture, Monitor, and Analyze Network Traffic in Real Time</p>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            <button class="btn-primary-solid" id="heroStartBtn"><i class="fas fa-play"></i> Start Analysis</button>
+            <button class="btn-neon" id="learnMoreBtn"><i class="fas fa-book-open"></i> Learn Packet Sniffing</button>
+        </div>
+    </div>
+</section>
+
+<!-- Packet Analyzer Section -->
+<section id="analyzer">
+    <h2><i class="fas fa-network-wired"></i> Packet Analyzer</h2>
+    <div class="filter-bar">
+        <input type="text" id="searchInput" placeholder="🔍 Filter by IP / Protocol..." style="flex:2">
+        <select id="protocolFilter">
+            <option value="all">All Protocols</option>
+            <option value="TCP">TCP</option>
+            <option value="UDP">UDP</option>
+            <option value="ICMP">ICMP</option>
+            <option value="HTTP">HTTP</option>
+        </select>
+        <button class="btn-neon" id="startCaptureBtn"><i class="fas fa-play"></i> Start Capture</button>
+        <button class="btn-neon" id="stopCaptureBtn"><i class="fas fa-stop"></i> Stop Capture</button>
+        <button class="btn-neon" id="clearLogsBtn"><i class="fas fa-trash-alt"></i> Clear Logs</button>
+        <button class="btn-neon" id="exportCSVBtn"><i class="fas fa-download"></i> Export CSV</button>
+    </div>
+    <div class="packet-table-container">
+        <table id="packetTable">
+            <thead>
+                <tr><th>Time</th><th>Source IP</th><th>Destination IP</th><th>Protocol</th><th>Port</th><th>Packet Size</th></tr>
+            </thead>
+            <tbody id="packetTableBody">
+                <tr><td colspan="6" style="text-align:center;">Click "Start Capture" to simulate packets</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="packetDetailPanel" class="details-panel" style="display: none;">
+        <h3><i class="fas fa-info-circle"></i> Packet Details</h3>
+        <div id="packetDetailsContent"></div>
+    </div>
+</section>
+
+<!-- Live Dashboard -->
+<section id="dashboard">
+    <h2><i class="fas fa-chart-line"></i> Live Network Dashboard</h2>
+    <div class="stats-grid" id="statsGrid">
+        <div class="stat-card"><i class="fas fa-boxes"></i> Total Packets<br><span class="stat-num" id="totalPackets">0</span></div>
+        <div class="stat-card"><i class="fas fa-chart-simple"></i> TCP Packets<br><span class="stat-num" id="tcpPackets">0</span></div>
+        <div class="stat-card"><i class="fas fa-chart-simple"></i> UDP Packets<br><span class="stat-num" id="udpPackets">0</span></div>
+        <div class="stat-card"><i class="fas fa-chart-simple"></i> ICMP Packets<br><span class="stat-num" id="icmpPackets">0</span></div>
+        <div class="stat-card"><i class="fas fa-globe"></i> HTTP Requests<br><span class="stat-num" id="httpCount">0</span></div>
+        <div class="stat-card"><i class="fas fa-tachometer-alt"></i> Net Speed<br><span id="netSpeed">⬆️ 2.4 Mbps / ⬇️ 8.1 Mbps</span></div>
+    </div>
+    <div class="charts-row">
+        <div class="chart-box"><canvas id="protocolChart" width="400" height="250"></canvas></div>
+        <div class="chart-box"><canvas id="trafficGraph" width="400" height="250"></canvas></div>
+        <div class="chart-box"><canvas id="topIPChart" width="400" height="250"></canvas></div>
+    </div>
+    <div class="ai-insight" id="aiInsightBlock" style="margin-top: 25px;">
+        <i class="fas fa-robot"></i> <strong>AI Packet Analysis:</strong> <span id="aiMessage">Analyzing live traffic patterns...</span>
+    </div>
+</section>
+
+<!-- Protocol Guide and Learning combined -->
+<section id="protocol-guide">
+    <h2><i class="fas fa-map"></i> Protocol Guide & Learning Center</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 1.8rem;">
+        <div class="card-glass" style="flex:1; padding: 1.5rem;">
+            <h3>📡 What is Packet Sniffing?</h3>
+            <p>Packet sniffing captures data packets traversing a network. Used for monitoring, troubleshooting, and security analysis.</p>
+            <h3>🛡️ TCP/IP Model</h3>
+            <p>Application, Transport, Internet, Network Access layers. Core of modern networking.</p>
+            <h3>⚙️ Common Protocols</h3>
+            <p><strong>TCP</strong> (reliable), <strong>UDP</strong> (fast), <strong>ICMP</strong> (ping), <strong>HTTP/HTTPS</strong> (web), <strong>DNS</strong>.</p>
+        </div>
+        <div class="card-glass" style="flex:1; padding: 1.5rem;">
+            <h3>⚠️ Cybersecurity Risks</h3>
+            <p>Attackers can intercept unencrypted traffic (passwords, cookies). Encryption (HTTPS, VPN) prevents this.</p>
+            <div style="background:#2a1a1a; padding: 12px; border-radius: 16px; margin-top: 10px; border-left: 4px solid #ff5555;">
+                <i class="fas fa-exclamation-triangle"></i> <strong>Legal warning:</strong> Only sniff networks you own or have explicit permission.
+            </div>
+            <h3 style="margin-top: 20px;">🔐 Safe Practices</h3>
+            <p>✅ Use HTTPS & VPN · ✅ MFA · ✅ Secure Wi-Fi (WPA3) · ✅ Strong passwords</p>
+        </div>
+    </div>
+</section>
+
+<!-- Scapy Integration -->
+<section id="scapy">
+    <h2><i class="fab fa-python"></i> Scapy Integration & Code</h2>
+    <div class="card-glass" style="padding: 25px;">
+        <pre style="background:#000000aa; padding: 18px; border-radius: 20px; overflow-x: auto;"><code style="color:#bbffdd;">from scapy.all import *
+
+def packet_callback(packet):
+    print(packet.summary())
+
+sniff(prn=packet_callback, count=10)</code></pre>
+        <p><strong>Line-by-line:</strong> Import Scapy → define callback → sniff network interface (requires root). Real backend would integrate this.</p>
+        <p style="margin-top: 12px;"><i class="fas fa-microchip"></i> <strong>Wireshark Guide:</strong> Install Wireshark, select interface, apply filters like `tcp.port == 443`, follow streams for deep analysis.</p>
+    </div>
+</section>
+
+<section id="about">
+    <h2>About NetScope</h2>
+    <p>Educational cybersecurity dashboard simulating a packet sniffer and traffic analyzer. Built to demonstrate packet inspection, protocol distribution, and real-time monitoring concepts using modern UI.</p>
+    <button class="btn-neon" id="exportPDFBtn"><i class="fas fa-file-pdf"></i> Export Report (PDF)</button>
+</section>
+
+<footer>
+    <p>© NetScope — Ethical packet analysis simulation | For authorized security testing only</p>
+</footer>
+
+<script>
+    // ------------------- SIMULATED PACKET GENERATOR ------------------
+    let captureInterval = null;
+    let isCapturing = false;
+    let packetsLog = [];
+    let packetIdCounter = 1;
+
+    const protocolsList = ['TCP', 'UDP', 'ICMP', 'HTTP', 'HTTPS'];
+    const srcIPs = ['192.168.1.1', '10.0.0.2', '172.16.0.5', '192.168.0.105', '8.8.8.8', '203.0.113.5', '198.51.100.7'];
+    const dstIPs = ['93.184.216.34', '142.250.185.46', '151.101.65.140', '192.168.1.55', '10.0.0.1', '1.1.1.1'];
+
+    function randomPacket() {
+        const protocol = protocolsList[Math.floor(Math.random() * protocolsList.length)];
+        let port = 0;
+        if (protocol === 'TCP') port = Math.random() > 0.5 ? 443 : 80;
+        else if (protocol === 'UDP') port = 53;
+        else if (protocol === 'HTTP') port = 80;
+        else if (protocol === 'HTTPS') port = 443;
+        else port = Math.floor(Math.random() * 60000) + 1000;
+        
+        const size = Math.floor(Math.random() * 400) + 64;
+        const src = srcIPs[Math.floor(Math.random() * srcIPs.length)];
+        const dst = dstIPs[Math.floor(Math.random() * dstIPs.length)];
+        const time = new Date().toLocaleTimeString();
+        return {
+            id: packetIdCounter++,
+            time,
+            src,
+            dst,
+            protocol,
+            port,
+            size,
+            ttl: Math.floor(Math.random() * 128) + 1,
+            flags: protocol === 'TCP' ? 'SYN,ACK' : 'NONE',
+            payloadPreview: btoa(`Sample ${protocol} data`).substring(0, 20) + '...'
+        };
+    }
+
+    function addPacketToUI(packet) {
+        packetsLog.unshift(packet);
+        if (packetsLog.length > 200) packetsLog.pop();
+        updateTableDisplay();
+        updateDashboardStats();
+        updateCharts();
+        updateAIInsight(packet);
+    }
+
+    function updateTableDisplay() {
+        const filterProto = document.getElementById('protocolFilter').value;
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = packetsLog.filter(p => {
+            if (filterProto !== 'all' && p.protocol !== filterProto) return false;
+            if (searchTerm && !p.src.includes(searchTerm) && !p.dst.includes(searchTerm) && !p.protocol.toLowerCase().includes(searchTerm)) return false;
+            return true;
+        });
+        const tbody = document.getElementById('packetTableBody');
+        if(filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6">No packets match filter</td></tr>';
+            return;
+        }
+        tbody.innerHTML = filtered.map(p => `
+            <tr onclick="showPacketDetails(${p.id})">
+                <td>${p.time}</td><td>${p.src}</td><td>${p.dst}</td><td>${p.protocol}</td><td>${p.port}</td><td>${p.size} B</td>
+            </tr>
+        `).join('');
+    }
+
+    window.showPacketDetails = (id) => {
+        const packet = packetsLog.find(p => p.id === id);
+        if(packet){
+            document.getElementById('packetDetailPanel').style.display = 'block';
+            document.getElementById('packetDetailsContent').innerHTML = `
+                <div style="display:grid;grid-template-columns:1fr 1fr; gap: 8px;"><strong>Packet #:</strong> ${packet.id}<br>
+                <strong>Timestamp:</strong> ${packet.time}<br><strong>Source:</strong> ${packet.src}<br><strong>Destination:</strong> ${packet.dst}<br>
+                <strong>Protocol:</strong> ${packet.protocol}<br><strong>Port:</strong> ${packet.port}<br><strong>Length:</strong> ${packet.size} bytes<br>
+                <strong>TTL:</strong> ${packet.ttl}<br><strong>Flags:</strong> ${packet.flags}<br><strong>Payload Preview:</strong> ${packet.payloadPreview}<br>
+                <strong>Header Info:</strong> Ethernet II, IPv4, ${packet.protocol}</div>
+            `;
+        }
+    };
+
+    // stats
+    function updateDashboardStats(){
+        const total = packetsLog.length;
+        const tcp = packetsLog.filter(p => p.protocol === 'TCP').length;
+        const udp = packetsLog.filter(p => p.protocol === 'UDP').length;
+        const icmp = packetsLog.filter(p => p.protocol === 'ICMP').length;
+        const http = packetsLog.filter(p => p.protocol === 'HTTP' || p.protocol === 'HTTPS').length;
+        document.getElementById('totalPackets').innerText = total;
+        document.getElementById('tcpPackets').innerText = tcp;
+        document.getElementById('udpPackets').innerText = udp;
+        document.getElementById('icmpPackets').innerText = icmp;
+        document.getElementById('httpCount').innerText = http;
+        // network speed simulation
+        const upSpd = (Math.random() * 5 + 1).toFixed(1);
+        const downSpd = (Math.random() * 20 + 4).toFixed(1);
+        document.getElementById('netSpeed').innerHTML = `⬆️ ${upSpd} Mbps / ⬇️ ${downSpd} Mbps`;
+    }
+
+    // charts
+    let protocolChart, trafficChart, topIPChart;
+    function initCharts() {
+        const ctxPie = document.getElementById('protocolChart').getContext('2d');
+        protocolChart = new Chart(ctxPie, {
+            type: 'doughnut',
+            data: { labels: ['TCP', 'UDP', 'ICMP', 'HTTP/HTTPS'], datasets: [{ data: [0,0,0,0], backgroundColor: ['#00ffaa', '#2a7fff', '#ffaa44', '#ff44aa'] }] }
+        });
+        const ctxLine = document.getElementById('trafficGraph').getContext('2d');
+        trafficChart = new Chart(ctxLine, {
+            type: 'line', data: { labels: [], datasets: [{ label: 'Packets/sec', data: [], borderColor: '#00ffaa', fill: false }] }
+        });
+        const ctxBar = document.getElementById('topIPChart').getContext('2d');
+        topIPChart = new Chart(ctxBar, {
+            type: 'bar', data: { labels: [], datasets: [{ label: 'Packet Count', data: [], backgroundColor: '#33ff99' }] }
+        });
+    }
+    function updateCharts() {
+        const tcp = packetsLog.filter(p=>p.protocol==='TCP').length;
+        const udp = packetsLog.filter(p=>p.protocol==='UDP').length;
+        const icmp = packetsLog.filter(p=>p.protocol==='ICMP').length;
+        const http = packetsLog.filter(p=>p.protocol==='HTTP' || p.protocol==='HTTPS').length;
+        protocolChart.data.datasets[0].data = [tcp, udp, icmp, http];
+        protocolChart.update();
+        // traffic volume simulation (last 20 intervals)
+        const labels = Array.from({length: 10}, (_,i)=>`-${9-i}s`);
+        const trafficData = packetsLog.slice(0,20).map(()=>Math.floor(Math.random()*10)+2);
+        trafficChart.data.labels = labels.slice(-10);
+        trafficChart.data.datasets[0].data = trafficData.slice(-10);
+        trafficChart.update();
+        // Top IPs
+        const ipCount = new Map();
+        packetsLog.forEach(p=>{ ipCount.set(p.src, (ipCount.get(p.src)||0)+1); });
+        const topIPs = Array.from(ipCount.entries()).sort((a,b)=>b[1]-a[1]).slice(0,5);
+        topIPChart.data.labels = topIPs.map(i=>i[0]);
+        topIPChart.data.datasets[0].data = topIPs.map(i=>i[1]);
+        topIPChart.update();
+    }
+    // AI insights
+    function updateAIInsight(packet){
+        const suspicious = (packet.protocol === 'ICMP' && packet.size > 300) || (packet.src === '8.8.8.8' && packet.dst.includes('192.168'));
+        const randomTip = Math.random();
+        let msg = "✅ Traffic looks normal. No anomalies detected.";
+        if(suspicious) msg = "⚠️ Alert: Large ICMP packet detected — possible tunneling or covert channel.";
+        else if(randomTip < 0.15) msg = "🧠 AI Insight: Unusual port 4444 activity flagged. Review host.";
+        else if(packet.protocol === 'UDP' && packet.port === 53) msg = "📡 DNS query observed. Ensure DNSSEC validation.";
+        document.getElementById('aiMessage').innerText = msg;
+    }
+    
+    // capture simulation
+    function startCaptureSimulation(){
+        if(captureInterval) clearInterval(captureInterval);
+        isCapturing = true;
+        captureInterval = setInterval(()=>{
+            if(isCapturing){
+                const newPkt = randomPacket();
+                addPacketToUI(newPkt);
+            }
+        }, 1200);
+    }
+    function stopCapture(){
+        if(captureInterval) clearInterval(captureInterval);
+        isCapturing = false;
+    }
+    function clearLogs(){
+        packetsLog = [];
+        packetIdCounter = 1;
+        updateTableDisplay();
+        updateDashboardStats();
+        updateCharts();
+        document.getElementById('packetDetailPanel').style.display = 'none';
+    }
+    function exportCSV(){
+        let csvRows = [["Time","Source IP","Dest IP","Protocol","Port","Size"]];
+        packetsLog.forEach(p => {
+            csvRows.push([p.time, p.src, p.dst, p.protocol, p.port, p.size]);
+        });
+        const csvContent = "data:text/csv;charset=utf-8," + csvRows.map(e => e.join(",")).join("\n");
+        const link = document.createElement('a');
+        link.href = encodeURI(csvContent);
+        link.download = "netscope_packets.csv";
+        link.click();
+    }
+    function exportPDFReport(){
+        alert("📄 PDF report generation: Exporting analysis summary with "+packetsLog.length+" packets and security insights. (Simulated)");
+    }
+
+    // event listeners
+    document.getElementById('startCaptureBtn').addEventListener('click', startCaptureSimulation);
+    document.getElementById('stopCaptureBtn').addEventListener('click', stopCapture);
+    document.getElementById('clearLogsBtn').addEventListener('click', clearLogs);
+    document.getElementById('exportCSVBtn').addEventListener('click', exportCSV);
+    document.getElementById('exportPDFBtn').addEventListener('click', exportPDFReport);
+    document.getElementById('protocolFilter').addEventListener('change', updateTableDisplay);
+    document.getElementById('searchInput').addEventListener('input', updateTableDisplay);
+    document.getElementById('heroStartBtn').addEventListener('click', ()=>{
+        document.getElementById('analyzer').scrollIntoView({behavior:'smooth'});
+        startCaptureSimulation();
+    });
+    document.getElementById('learnMoreBtn').addEventListener('click', ()=>{
+        document.getElementById('protocol-guide').scrollIntoView({behavior:'smooth'});
+    });
+    
+    // initial dummy packets
+    for(let i=0;i<5;i++) addPacketToUI(randomPacket());
+    initCharts();
+    updateDashboardStats();
+    updateCharts();
+</script>
+</body>
+</html>
