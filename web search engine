@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nova Search - AI Powered Search Engine</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        /* ===== CSS Variables ===== */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-card: rgba(255, 255, 255, 0.7);
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a6a;
+            --text-muted: #8888aa;
+            --border-color: #e8e8f0;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.15);
+            --gradient-start: #6366f1;
+            --gradient-end: #8b5cf6;
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --input-bg: rgba(255, 255, 255, 0.9);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: rgba(26, 26, 46, 0.7);
+            --text-primary: #f0f0ff;
+            --text-secondary: #b0b0d0;
+            --text-muted: #707090;
+            --border-color: #2a2a44;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.6);
+            --glass-bg: rgba(26, 26, 46, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --input-bg: rgba(30, 30, 60, 0.9);
+        }
+
+        /* ===== Reset & Base ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: var(--transition);
+            overflow-x: hidden;
+        }
+
+        /* ===== Scrollbar ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-start);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gradient-end);
+        }
+
+        /* ===== Background Gradient Animation ===== */
+        .bg-animation {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            z-index: 0;
+            background: radial-gradient(ellipse at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 50%, rgba(139, 92, 246, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 0%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+            animation: bgFloat 20s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+
+        @keyframes bgFloat {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            100% {
+                transform: translate(-2%, 2%) rotate(2deg);
+            }
+        }
+
+        /* ===== Header / Navbar ===== */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: var(--glass-bg);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .navbar-brand i {
+            -webkit-text-fill-color: initial;
+            color: var(--gradient-start);
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .navbar-actions button,
+        .navbar-actions a {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .navbar-actions button:hover,
+        .navbar-actions a:hover {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)) !important;
+            color: white !important;
+            padding: 8px 20px !important;
+            border-radius: 50px !important;
+            font-weight: 600 !important;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .theme-toggle {
+            font-size: 1.2rem;
+        }
+
+        /* ===== Categories ===== */
+        .categories {
+            display: flex;
+            gap: 4px;
+            padding: 8px 24px;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            flex-wrap: nowrap;
+            scrollbar-width: none;
+        }
+        .categories::-webkit-scrollbar {
+            display: none;
+        }
+
+        .categories button {
+            background: none;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .categories button:hover {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .categories button.active {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+        }
+
+        /* ===== Main Container ===== */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+            min-height: calc(100vh - 120px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ===== Logo ===== */
+        .logo {
+            font-size: 4.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end), #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            letter-spacing: -2px;
+            text-shadow: 0 0 60px rgba(99, 102, 241, 0.15);
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+
+        .logo-sub {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 400;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            -webkit-text-fill-color: var(--text-secondary);
+        }
+
+        @keyframes logoPulse {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+        }
+
+        /* ===== Search Bar ===== */
+        .search-wrapper {
+            width: 100%;
+            max-width: 720px;
+            position: relative;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: var(--input-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            padding: 6px 8px 6px 20px;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+        }
+
+        .search-bar:focus-within {
+            border-color: var(--gradient-start);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15), var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        .search-bar i {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-right: 8px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 1.05rem;
+            padding: 12px 0;
+            color: var(--text-primary);
+            font-family: inherit;
+            min-width: 0;
+        }
+
+        .search-bar input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding-left: 8px;
+            border-left: 1px solid var(--border-color);
+        }
+
+        .search-actions button {
+            background: none;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 50px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .search-actions button:hover {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .search-actions .btn-ai {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            font-weight: 600;
+            padding: 6px 16px;
+        }
+
+        .search-actions .btn-ai:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .search-actions .btn-voice.recording {
+            color: #ef4444;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        /* ===== Suggestions ===== */
+        .suggestions {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-hover);
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 50;
+        }
+
+        .suggestions.show {
+            display: block;
+        }
+
+        .suggestions li {
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: var(--transition);
+            list-style: none;
+            color: var(--text-secondary);
+        }
+
+        .suggestions li:hover {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .suggestions li i {
+            color: var(--text-muted);
+            width: 20px;
+            text-align: center;
+        }
+
+        .suggestions li .highlight {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* ===== Quick Icons Grid ===== */
+        .quick-icons {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+            gap: 12px;
+            width: 100%;
+            max-width: 720px;
+            margin-top: 32px;
+        }
+
+        .quick-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 6px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--bg-card);
+            backdrop-filter: blur(4px);
+            border: 1px solid transparent;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .quick-icon:hover {
+            transform: translateY(-6px) scale(1.05);
+            background: var(--border-color);
+            border-color: var(--gradient-start);
+            box-shadow: var(--shadow);
+            color: var(--text-primary);
+        }
+
+        .quick-icon img,
+        .quick-icon .icon-placeholder {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            object-fit: contain;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            transition: var(--transition);
+        }
+
+        .quick-icon:hover img,
+        .quick-icon:hover .icon-placeholder {
+            transform: scale(1.1);
+        }
+
+        .quick-icon .tooltip {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%) scale(0.8);
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .quick-icon:hover .tooltip {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+
+        /* ===== Trending ===== */
+        .trending-section {
+            width: 100%;
+            max-width: 720px;
+            margin-top: 32px;
+        }
+
+        .trending-section h3 {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .trending-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .trending-tags span {
+            background: var(--bg-card);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .trending-tags span:hover {
+            background: var(--gradient-start);
+            color: white;
+            border-color: var(--gradient-start);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+        }
+
+        /* ===== AI Answer Box ===== */
+        .ai-answer {
+            width: 100%;
+            max-width: 720px;
+            margin-top: 24px;
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius);
+            padding: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            display: none;
+        }
+
+        .ai-answer.show {
+            display: block;
+            animation: fadeSlideUp 0.4s ease;
+        }
+
+        .ai-answer .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: var(--gradient-start);
+        }
+
+        .ai-answer .ai-content {
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .ai-answer .ai-content strong {
+            color: var(--text-primary);
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== Footer ===== */
+        .footer {
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid var(--border-color);
+            padding: 24px 20px;
+            background: var(--bg-secondary);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 3rem;
+            }
+            .navbar {
+                padding: 10px 16px;
+            }
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+            .navbar-actions button,
+            .navbar-actions a {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+            .search-bar {
+                padding: 4px 6px 4px 14px;
+                border-radius: 40px;
+            }
+            .search-bar input {
+                font-size: 0.95rem;
+                padding: 10px 0;
+            }
+            .search-actions button {
+                padding: 6px 8px;
+                font-size: 0.85rem;
+            }
+            .search-actions .btn-ai {
+                padding: 4px 12px;
+                font-size: 0.8rem;
+            }
+            .quick-icons {
+                grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+                gap: 8px;
+            }
+            .quick-icon {
+                padding: 8px 4px;
+                font-size: 0.6rem;
+            }
+            .quick-icon img,
+            .quick-icon .icon-placeholder {
+                width: 32px;
+                height: 32px;
+                font-size: 1rem;
+            }
+            .categories {
+                padding: 6px 12px;
+            }
+            .categories button {
+                font-size: 0.75rem;
+                padding: 4px 12px;
+            }
+            .footer {
+                flex-direction: column;
+                text-align: center;
+            }
+            .footer-links {
+                justify-content: center;
+            }
+            .main-container {
+                padding: 24px 16px 60px;
+            }
+            .trending-tags span {
+                font-size: 0.75rem;
+                padding: 4px 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 2.4rem;
+            }
+            .logo-sub {
+                font-size: 0.8rem;
+            }
+            .navbar-actions .hide-mobile {
+                display: none;
+            }
+            .search-bar input {
+                font-size: 0.85rem;
+            }
+            .quick-icons {
+                grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+                gap: 6px;
+            }
+            .quick-icon {
+                padding: 6px 2px;
+                font-size: 0.55rem;
+            }
+            .quick-icon img,
+            .quick-icon .icon-placeholder {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* ===== Utility ===== */
+        .hidden {
+            display: none !important;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mt-16 {
+            margin-top: 16px;
+        }
+        .gap-8 {
+            gap: 8px;
+        }
+        .flex {
+            display: flex;
+        }
+        .flex-center {
+            align-items: center;
+            justify-content: center;
+        }
+        .w-full {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== Background Animation ===== -->
+    <div class="bg-animation"></div>
+
+    <!-- ===== Navbar ===== -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="#" onclick="resetHome()">
+            <i class="fas fa-sparkles"></i> Nova
+        </a>
+        <div class="navbar-actions">
+            <button onclick="toggleTheme()" class="theme-toggle" title="Toggle Theme">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
+            <a href="#" class="hide-mobile"><i class="fas fa-bookmark"></i> Bookmarks</a>
+            <a href="#" class="hide-mobile"><i class="fas fa-history"></i> History</a>
+            <button onclick="alert('Guest Mode Activated')" class="hide-mobile"><i class="fas fa-user"></i> Guest</button>
+            <button class="btn-primary" onclick="alert('Sign In with Google / GitHub')"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+        </div>
+    </nav>
+
+    <!-- ===== Categories ===== -->
+    <div class="categories" id="categories">
+        <button class="active">All</button>
+        <button>Images</button>
+        <button>Videos</button>
+        <button>News</button>
+        <button>Maps</button>
+        <button>Shopping</button>
+        <button>Books</button>
+        <button>Music</button>
+        <button>Apps</button>
+        <button>PDF</button>
+        <button>Code</button>
+        <button>Jobs</button>
+        <button>Education</button>
+        <button>AI</button>
+    </div>
+
+    <!-- ===== Main ===== -->
+    <div class="main-container" id="mainContainer">
+
+        <!-- Logo -->
+        <div class="logo">Nova Search</div>
+        <div class="logo-sub">✨ AI-Powered · Fast · Private</div>
+
+        <!-- Search Bar -->
+        <div class="search-wrapper">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search anything..." autofocus />
+                <div class="search-actions">
+                    <button class="btn-voice" id="voiceBtn" title="Voice Search">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button class="btn-ai" id="aiBtn" title="AI Search">
+                        <i class="fas fa-robot"></i> AI
+                    </button>
+                </div>
+            </div>
+
+            <!-- Suggestions -->
+            <ul class="suggestions" id="suggestions"></ul>
+        </div>
+
+        <!-- AI Answer Box -->
+        <div class="ai-answer" id="aiAnswer">
+            <div class="ai-header">
+                <i class="fas fa-robot" style="font-size:1.4rem;"></i>
+                AI Assistant
+            </div>
+            <div class="ai-content" id="aiContent">
+                <strong>✨ Hello!</strong> I'm your AI assistant. Ask me anything about programming, math, science, history, or general knowledge.
+            </div>
+        </div>
+
+        <!-- Quick Icons -->
+        <div class="quick-icons" id="quickIcons"></div>
+
+        <!-- Trending -->
+        <div class="trending-section">
+            <h3><i class="fas fa-fire" style="color:#ef4444;"></i> Trending Searches</h3>
+            <div class="trending-tags" id="trendingTags">
+                <span>AI News</span>
+                <span>ChatGPT</span>
+                <span>GitHub</span>
+                <span>React 19</span>
+                <span>Next.js</span>
+                <span>Tailwind CSS</span>
+                <span>Machine Learning</span>
+                <span>Web3</span>
+                <span>Cybersecurity</span>
+                <span>Cloud Computing</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Footer ===== -->
+    <footer class="footer">
+        <span>© 2026 Nova Search · Made with ❤️</span>
+        <div class="footer-links">
+            <a href="#">About</a>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">Help</a>
+            <a href="#">Feedback</a>
+            <a href="#">Contact</a>
+            <a href="#">Blog</a>
+            <a href="#">API</a>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================================
+        //  CONFIGURATION
+        // ============================================================
+
+        const SITE_NAME = 'Nova Search';
+
+        // Official websites: key → URL
+        const OFFICIAL_SITES = {
+            google: 'https://www.google.com',
+            youtube: 'https://www.youtube.com',
+            instagram: 'https://www.instagram.com',
+            facebook: 'https://www.facebook.com',
+            whatsapp: 'https://www.whatsapp.com',
+            twitter: 'https://x.com',
+            github: 'https://github.com',
+            linkedin: 'https://www.linkedin.com',
+            netflix: 'https://www.netflix.com',
+            amazon: 'https://www.amazon.com',
+            wikipedia: 'https://www.wikipedia.org',
+            chatgpt: 'https://chat.openai.com',
+            spotify: 'https://www.spotify.com',
+            discord: 'https://discord.com',
+            pinterest: 'https://www.pinterest.com',
+            reddit: 'https://www.reddit.com',
+            canva: 'https://www.canva.com',
+            figma: 'https://www.figma.com',
+            notion: 'https://www.notion.so',
+            gmail: 'https://mail.google.com',
+            'google drive': 'https://drive.google.com',
+            'google maps': 'https://maps.google.com',
+            'google photos': 'https://photos.google.com',
+            'google translate': 'https://translate.google.com',
+            'google docs': 'https://docs.google.com',
+            'google sheets': 'https://sheets.google.com',
+            'google meet': 'https://meet.google.com',
+            'google classroom': 'https://classroom.google.com',
+            microsoft: 'https://www.microsoft.com',
+            outlook: 'https://outlook.live.com',
+            onedrive: 'https://onedrive.live.com',
+            teams: 'https://www.microsoft.com/en-us/microsoft-teams',
+            zoom: 'https://zoom.us',
+            twitch: 'https://www.twitch.tv',
+            snapchat: 'https://www.snapchat.com',
+            telegram: 'https://telegram.org',
+            threads: 'https://www.threads.net',
+            quora: 'https://www.quora.com',
+            yahoo: 'https://www.yahoo.com',
+            bing: 'https://www.bing.com',
+            duckduckgo: 'https://duckduckgo.com',
+            medium: 'https://medium.com',
+            'stack overflow': 'https://stackoverflow.com',
+        };
+
+        // Quick icons data (name, icon/emoji, url)
+        const QUICK_ICONS = [
+            { name: 'Google', emoji: '🔍', url: 'https://www.google.com' },
+            { name: 'YouTube', emoji: '▶️', url: 'https://www.youtube.com' },
+            { name: 'Instagram', emoji: '📸', url: 'https://www.instagram.com' },
+            { name: 'Facebook', emoji: '📘', url: 'https://www.facebook.com' },
+            { name: 'WhatsApp', emoji: '💬', url: 'https://www.whatsapp.com' },
+            { name: 'X (Twitter)', emoji: '🐦', url: 'https://x.com' },
+            { name: 'GitHub', emoji: '🐙', url: 'https://github.com' },
+            { name: 'LinkedIn', emoji: '💼', url: 'https://www.linkedin.com' },
+            { name: 'Netflix', emoji: '🎬', url: 'https://www.netflix.com' },
+            { name: 'Amazon', emoji: '🛒', url: 'https://www.amazon.com' },
+            { name: 'Wikipedia', emoji: '📚', url: 'https://www.wikipedia.org' },
+            { name: 'ChatGPT', emoji: '🤖', url: 'https://chat.openai.com' },
+            { name: 'Spotify', emoji: '🎵', url: 'https://www.spotify.com' },
+            { name: 'Discord', emoji: '🎮', url: 'https://discord.com' },
+            { name: 'Pinterest', emoji: '📌', url: 'https://www.pinterest.com' },
+            { name: 'Reddit', emoji: '🤝', url: 'https://www.reddit.com' },
+            { name: 'Canva', emoji: '🎨', url: 'https://www.canva.com' },
+            { name: 'Figma', emoji: '✏️', url: 'https://www.figma.com' },
+            { name: 'Notion', emoji: '📝', url: 'https://www.notion.so' },
+            { name: 'Gmail', emoji: '📧', url: 'https://mail.google.com' },
+            { name: 'Google Drive', emoji: '☁️', url: 'https://drive.google.com' },
+            { name: 'Google Maps', emoji: '🗺️', url: 'https://maps.google.com' },
+            { name: 'Google Translate', emoji: '🌐', url: 'https://translate.google.com' },
+            { name: 'Microsoft', emoji: '🪟', url: 'https://www.microsoft.com' },
+            { name: 'Zoom', emoji: '📹', url: 'https://zoom.us' },
+            { name: 'Twitch', emoji: '🎥', url: 'https://www.twitch.tv' },
+            { name: 'Telegram', emoji: '✈️', url: 'https://telegram.org' },
+            { name: 'Quora', emoji: '❓', url: 'https://www.quora.com' },
+            { name: 'Yahoo', emoji: '🔶', url: 'https://www.yahoo.com' },
+            { name: 'Bing', emoji: '🔵', url: 'https://www.bing.com' },
+            { name: 'DuckDuckGo', emoji: '🦆', url: 'https://duckduckgo.com' },
+            { name: 'Medium', emoji: '✍️', url: 'https://medium.com' },
+            { name: 'Stack Overflow', emoji: '📊', url: 'https://stackoverflow.com' },
+        ];
+
+        // AI knowledge base (simple Q&A)
+        const AI_KNOWLEDGE = {
+            'hello': 'Hello! 👋 How can I assist you today?',
+            'hi': 'Hi there! 😊 What can I help you with?',
+            'who are you': 'I am Nova AI, your intelligent search assistant. I can help with programming, math, science, history, and general knowledge.',
+            'what is ai': 'AI (Artificial Intelligence) is the simulation of human intelligence processes by machines, especially computer systems. It includes learning, reasoning, and self-correction.',
+            'what is programming': 'Programming is the process of creating a set of instructions that tell a computer how to perform a task. It involves languages like Python, JavaScript, Java, C++, and more.',
+            'what is javascript': 'JavaScript is a high-level, interpreted programming language that is one of the core technologies of the web, along with HTML and CSS. It enables interactive web pages.',
+            'what is python': 'Python is a high-level, interpreted programming language known for its simplicity and readability. It is widely used in web development, data science, AI, and automation.',
+            'what is react': 'React is a JavaScript library for building user interfaces, developed by Facebook. It allows developers to create large web applications that can update and render efficiently.',
+            'what is nextjs': 'Next.js is a React framework that enables server-side rendering, static site generation, and other powerful features for building production-ready web applications.',
+            'what is tailwind': 'Tailwind CSS is a utility-first CSS framework that provides low-level utility classes to build custom designs quickly without leaving your HTML.',
+            'what is github': 'GitHub is a platform for version control and collaboration. It allows developers to host and review code, manage projects, and build software together.',
+            'what is machine learning': 'Machine Learning is a subset of AI that enables systems to learn and improve from experience without being explicitly programmed. It uses algorithms to find patterns in data.',
+            'what is web3': 'Web3 refers to the third generation of the internet, which is decentralized and built on blockchain technology. It aims to give users more control over their data and digital identity.',
+            'what is cloud computing': 'Cloud computing is the delivery of computing services—including servers, storage, databases, networking, software, and analytics—over the internet ("the cloud").',
+            'what is cybersecurity': 'Cybersecurity is the practice of protecting systems, networks, and programs from digital attacks. These attacks are usually aimed at accessing, changing, or destroying sensitive information.',
+            'who created the first computer': 'The first mechanical computer was created by Charles Babbage in the 1820s. The first electronic computer, ENIAC, was built in 1945.',
+            'what is the capital of france': 'The capital of France is Paris. 🇫🇷',
+            'what is the capital of japan': 'The capital of Japan is Tokyo. 🇯🇵',
+            'what is the capital of brazil': 'The capital of Brazil is Brasília. 🇧🇷',
+            'what is 2+2': '2 + 2 = 4. 🧮',
+            'what is 10*10': '10 × 10 = 100. 🧮',
+            'what is the square root of 144': 'The square root of 144 is 12. 🧮',
+            'what is the meaning of life': 'The meaning of life is a philosophical question. Many believe it\'s about finding purpose, connection, and happiness. 🌟',
+            'tell me a joke': 'Why do programmers prefer dark mode? Because light attracts bugs! 😄',
+            'help': 'I can help with programming, math, science, history, writing, coding, and general knowledge. Just ask me anything!',
+        };
+
+        // ============================================================
+        //  DOM REFS
+        // ============================================================
+
+        const searchInput = document.getElementById('searchInput');
+        const suggestionsEl = document.getElementById('suggestions');
+        const aiAnswer = document.getElementById('aiAnswer');
+        const aiContent = document.getElementById('aiContent');
+        const voiceBtn = document.getElementById('voiceBtn');
+        const aiBtn = document.getElementById('aiBtn');
+        const quickIconsEl = document.getElementById('quickIcons');
+        const themeIcon = document.getElementById('themeIcon');
+
+        // ============================================================
+        //  THEME
+        // ============================================================
+
+        let isDark = localStorage.getItem('theme') === 'dark';
+
+        function applyTheme() {
+            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        function toggleTheme() {
+            isDark = !isDark;
+            applyTheme();
+        }
+
+        applyTheme();
+
+        // ============================================================
+        //  RENDER QUICK ICONS
+        // ============================================================
+
+        function renderQuickIcons() {
+            quickIconsEl.innerHTML = QUICK_ICONS.map(item => `
+                <a class="quick-icon" href="${item.url}" target="_blank" title="${item.name}">
+                    <div class="icon-placeholder">${item.emoji}</div>
+                    <span>${item.name}</span>
+                    <span class="tooltip">${item.name}</span>
+                </a>
+            `).join('');
+        }
+        renderQuickIcons();
+
+        // ============================================================
+        //  SUGGESTIONS
+        // ============================================================
+
+        function getSuggestions(query) {
+            if (!query || query.length < 1) return [];
+            const q = query.toLowerCase().trim();
+            const keys = Object.keys(OFFICIAL_SITES);
+            const matches = keys.filter(k => k.includes(q));
+            // Also add some common suggestions
+            const extra = [
+                'GitHub', 'GitLab', 'Gmail', 'Google', 'Google Maps', 'Google Drive',
+                'YouTube', 'Instagram', 'Facebook', 'Twitter', 'LinkedIn', 'Netflix',
+                'Amazon', 'Wikipedia', 'ChatGPT', 'Spotify', 'Discord', 'Reddit'
+            ];
+            const extraMatches = extra.filter(e => e.toLowerCase().includes(q));
+            const all = [...new Set([...matches, ...extraMatches])];
+            return all.slice(0, 8);
+        }
+
+        function showSuggestions(query) {
+            const list = getSuggestions(query);
+            if (list.length === 0) {
+                suggestionsEl.classList.remove('show');
+                return;
+            }
+            suggestionsEl.innerHTML = list.map(item => `
+                <li data-value="${item}">
+                    <i class="fas fa-globe"></i>
+                    <span>${highlightMatch(item, query)}</span>
+                </li>
+            `).join('');
+            suggestionsEl.classList.add('show');
+
+            // Click handler
+            suggestionsEl.querySelectorAll('li').forEach(li => {
+                li.addEventListener('click', () => {
+                    const val = li.dataset.value;
+                    searchInput.value = val;
+                    suggestionsEl.classList.remove('show');
+                    performSearch(val);
+                });
+            });
+        }
+
+        function highlightMatch(text, query) {
+            const idx = text.toLowerCase().indexOf(query.toLowerCase());
+            if (idx === -1) return text;
+            return text.slice(0, idx) +
+                `<span class="highlight">${text.slice(idx, idx + query.length)}</span>` +
+                text.slice(idx + query.length);
+        }
+
+        // ============================================================
+        //  SEARCH
+        // ============================================================
+
+        function performSearch(query) {
+            if (!query || query.trim() === '') return;
+            const q = query.trim().toLowerCase();
+
+            // 1. Check official site
+            const siteKey = Object.keys(OFFICIAL_SITES).find(k => k === q);
+            if (siteKey) {
+                window.open(OFFICIAL_SITES[siteKey], '_blank');
+                return;
+            }
+
+            // 2. Check if it's a known site by partial match (if exactly one)
+            const partialMatches = Object.keys(OFFICIAL_SITES).filter(k => k.includes(q));
+            if (partialMatches.length === 1) {
+                window.open(OFFICIAL_SITES[partialMatches[0]], '_blank');
+                return;
+            }
+
+            // 3. AI answer
+            const aiResponse = getAIResponse(q);
+            if (aiResponse) {
+                aiContent.innerHTML = aiResponse;
+                aiAnswer.classList.add('show');
+                // Still show web results in background
+                fallbackWebSearch(q);
+                return;
+            }
+
+            // 4. Fallback: web search
+            fallbackWebSearch(q);
+        }
+
+        function fallbackWebSearch(query) {
+            // Use Google Custom Search or DuckDuckGo as fallback
+            // We'll use DuckDuckGo for privacy
+            const url = `https://duckduckgo.com/?q=${encodeURIComponent(query)}`;
+            window.open(url, '_blank');
+        }
+
+        // ============================================================
+        //  AI RESPONSE
+        // ============================================================
+
+        function getAIResponse(query) {
+            const q = query.toLowerCase().trim();
+            // Direct match
+            for (const [key, value] of Object.entries(AI_KNOWLEDGE)) {
+                if (q.includes(key) || key.includes(q)) {
+                    return value;
+                }
+            }
+            // Check for math expressions
+            if (/^[0-9+\-*/\^(). ]+$/.test(q)) {
+                try {
+                    const result = Function('"use strict"; return (' + q + ')')();
+                    return `🧮 The result of <strong>${q}</strong> is <strong>${result}</strong>.`;
+                } catch (e) {
+                    return null;
+                }
+            }
+            // Check for weather, time, etc.
+            if (q.includes('weather')) {
+                return `🌤️ Please check your local weather app or search for "${query}" for the latest forecast.`;
+            }
+            if (q.includes('time')) {
+                return `🕐 The current time is ${new Date().toLocaleTimeString()}.`;
+            }
+            if (q.includes('date')) {
+                return `📅 Today is ${new Date().toLocaleDateString()}.`;
+            }
+            if (q.includes('translate')) {
+                return `🌐 Use Google Translate for translation services.`;
+            }
+            if (q.includes('dictionary') || q.includes('meaning')) {
+                return `📖 Check a dictionary or search for "${query}" for definitions.`;
+            }
+            return null;
+        }
+
+        // ============================================================
+        //  VOICE SEARCH
+        // ============================================================
+
+        let isRecording = false;
+        let recognition = null;
+
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                searchInput.value = transcript;
+                voiceBtn.classList.remove('recording');
+                isRecording = false;
+                performSearch(transcript);
+            };
+
+            recognition.onerror = () => {
+                voiceBtn.classList.remove('recording');
+                isRecording = false;
+            };
+
+            recognition.onend = () => {
+                voiceBtn.classList.remove('recording');
+                isRecording = false;
+            };
+        }
+
+        voiceBtn.addEventListener('click', () => {
+            if (!recognition) {
+                alert('Voice search is not supported in this browser. Please use Chrome, Edge, or Safari.');
+                return;
+            }
+            if (isRecording) {
+                recognition.stop();
+                voiceBtn.classList.remove('recording');
+                isRecording = false;
+                return;
+            }
+            recognition.start();
+            voiceBtn.classList.add('recording');
+            isRecording = true;
+        });
+
+        // ============================================================
+        //  AI BUTTON
+        // ============================================================
+
+        aiBtn.addEventListener('click', () => {
+            const query = searchInput.value.trim() || 'help';
+            const response = getAIResponse(query);
+            if (response) {
+                aiContent.innerHTML = response;
+                aiAnswer.classList.add('show');
+            } else {
+                aiContent.innerHTML = `🤔 I couldn't find a specific answer for "<strong>${query}</strong>". Try searching the web!`;
+                aiAnswer.classList.add('show');
+            }
+        });
+
+        // ============================================================
+        //  INPUT EVENTS
+        // ============================================================
+
+        searchInput.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if (val.length > 1) {
+                showSuggestions(val);
+            } else {
+                suggestionsEl.classList.remove('show');
+            }
+            // Hide AI answer when typing
+            aiAnswer.classList.remove('show');
+        });
+
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const val = searchInput.value.trim();
+                suggestionsEl.classList.remove('show');
+                if (val) performSearch(val);
+            }
+            if (e.key === 'Escape') {
+                suggestionsEl.classList.remove('show');
+                searchInput.blur();
+            }
+            // Arrow navigation for suggestions
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                const items = suggestionsEl.querySelectorAll('li');
+                if (items.length === 0) return;
+                e.preventDefault();
+                let idx = Array.from(items).findIndex(li => li.classList.contains('selected'));
+                if (e.key === 'ArrowDown') {
+                    idx = (idx + 1) % items.length;
+                } else {
+                    idx = (idx - 1 + items.length) % items.length;
+                }
+                items.forEach(li => li.classList.remove('selected'));
+                items[idx].classList.add('selected');
+                searchInput.value = items[idx].dataset.value;
+            }
+        });
+
+        // Click outside to close suggestions
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-wrapper')) {
+                suggestionsEl.classList.remove('show');
+            }
+        });
+
+        // ============================================================
+        //  CATEGORY CLICKS
+        // ============================================================
+
+        document.querySelectorAll('.categories button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.categories button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                // Simulate category search
+                const cat = btn.textContent;
+                searchInput.value = cat + ' ';
+                searchInput.focus();
+                // Trigger AI answer for category
+                const response = getAIResponse(cat);
+                if (response) {
+                    aiContent.innerHTML = `🔍 <strong>${cat}</strong> category selected. ${response}`;
+                    aiAnswer.classList.add('show');
+                }
+            });
+        });
+
+        // ============================================================
+        //  TRENDING CLICKS
+        // ============================================================
+
+        document.querySelectorAll('.trending-tags span').forEach(tag => {
+            tag.addEventListener('click', () => {
+                searchInput.value = tag.textContent;
+                performSearch(tag.textContent);
+            });
+        });
+
+        // ============================================================
+        //  RESET HOME
+        // ============================================================
+
+        function resetHome() {
+            searchInput.value = '';
+            suggestionsEl.classList.remove('show');
+            aiAnswer.classList.remove('show');
+            searchInput.focus();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ============================================================
+        //  KEYBOARD SHORTCUTS
+        // ============================================================
+
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+K or Cmd+K → focus search
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                searchInput.focus();
+                searchInput.select();
+            }
+            // Escape → clear
+            if (e.key === 'Escape' && document.activeElement === searchInput) {
+                searchInput.value = '';
+                suggestionsEl.classList.remove('show');
+                aiAnswer.classList.remove('show');
+                searchInput.blur();
+            }
+        });
+
+        // ============================================================
+        //  INIT
+        // ============================================================
+
+        // Focus search on load
+        setTimeout(() => searchInput.focus(), 300);
+
+        console.log(`✨ ${SITE_NAME} loaded successfully!`);
+        console.log('🔍 Type a website name to jump directly, or ask AI for help.');
+        console.log('🎤 Use voice search, or click the AI button for intelligent answers.');
+
+        // ============================================================
+        //  SERVICE WORKER / PWA SUPPORT (placeholder)
+        // ============================================================
+
+        if ('serviceWorker' in navigator) {
+            // You can register a service worker here for PWA support
+            // navigator.serviceWorker.register('/sw.js');
+        }
+    </script>
+
+</body>
+</html>
