@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Caesar Cipher | Cybersecurity Encryption Tool</title>
+  <!-- Google Fonts & Font Awesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Tailwind CSS CDN (lightweight) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Custom overrides for Tailwind + glassmorphism/neon -->
+  <style>
+    * {
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s ease;
+    }
+    body {
+      background: radial-gradient(circle at 20% 30%, #0a0f1e, #03050b);
+      overflow-x: hidden;
+    }
+    /* Floating binary animation */
+    .binary-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .binary-float {
+      position: absolute;
+      color: rgba(0, 255, 170, 0.08);
+      font-family: monospace;
+      font-size: 1.2rem;
+      user-select: none;
+      white-space: nowrap;
+      animation: floatBinary 20s linear infinite;
+    }
+    @keyframes floatBinary {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.4; }
+      100% { transform: translateY(-20vh) rotate(5deg); opacity: 0; }
+    }
+    /* Glassmorphism Card */
+    .glass-card {
+      background: rgba(15, 25, 45, 0.55);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 2rem;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
+    }
+    .neon-text {
+      text-shadow: 0 0 6px #0ff, 0 0 12px #0ff;
+    }
+    .btn-neon {
+      background: linear-gradient(95deg, #0a2f44, #0a1a2a);
+      border: 1px solid #0ff;
+      transition: 0.2s;
+    }
+    .btn-neon:hover {
+      box-shadow: 0 0 12px #0ff;
+      transform: scale(1.02);
+      border-color: #0f0;
+    }
+    .alphabet-highlight {
+      background: linear-gradient(90deg, #0ff, #2effb0);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .stat-card {
+      background: rgba(0, 20, 30, 0.6);
+      border-left: 4px solid #0ff;
+    }
+    /* scroll animation fade-up */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.appear {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* character animation on output */
+    @keyframes charPop {
+      0% { opacity: 0; transform: scale(0.8);}
+      80% { transform: scale(1.05);}
+      100% { opacity: 1; transform: scale(1);}
+    }
+    .char-animate {
+      display: inline-block;
+      animation: charPop 0.2s ease forwards;
+    }
+    .dark-mode-toggle {
+      cursor: pointer;
+    }
+    body.dark {
+      background: radial-gradient(circle at 20% 30%, #0b1120, #010101);
+    }
+    /* custom scroll */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0a1428; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #0ff; border-radius: 10px; }
+  </style>
+</head>
+<body class="text-white relative">
+
+  <!-- Floating binary numbers background -->
+  <div class="binary-bg" id="binaryBg"></div>
+
+  <!-- Main Content -->
+  <div class="relative z-10 container mx-auto px-4 md:px-8 py-6 max-w-7xl">
+    
+    <!-- Hero Section -->
+    <section id="home" class="fade-up min-h-[85vh] flex flex-col justify-center items-center text-center py-12">
+      <div class="glass-card p-8 md:p-12 w-full max-w-4xl mx-auto">
+        <i class="fas fa-shield-haltered text-6xl text-cyan-400 neon-text mb-5 animate-pulse"></i>
+        <h1 class="text-4xl md:text-6xl font-extrabold bg-gradient-to-r from-cyan-300 via-teal-300 to-green-300 bg-clip-text text-transparent">Caesar Cipher<br>Encryption Tool</h1>
+        <p class="text-gray-300 text-lg md:text-xl mt-4 max-w-2xl mx-auto">Learn Cryptography by Encrypting and Decrypting Messages in Real-time</p>
+        <button id="tryNowBtn" class="mt-8 px-8 py-3 rounded-full bg-cyan-600/30 border border-cyan-400 font-semibold text-cyan-100 hover:bg-cyan-500/40 transition-all text-lg shadow-lg shadow-cyan-500/20">✨ Try Now ✨</button>
+      </div>
+    </section>
+
+    <!-- About Caesar Cipher Section -->
+    <section id="about" class="fade-up my-16">
+      <div class="glass-card p-6 md:p-10">
+        <h2 class="text-3xl font-bold border-l-4 border-cyan-400 pl-4 mb-6">📜 About Caesar Cipher</h2>
+        <div class="grid md:grid-cols-2 gap-8">
+          <div>
+            <p class="text-gray-200 leading-relaxed"><span class="font-bold text-cyan-300">What?</span> The Caesar cipher is one of the oldest known encryption techniques. Each letter in the plaintext is shifted a fixed number of positions down the alphabet.</p>
+            <p class="mt-3 text-gray-200"><span class="font-bold text-green-300">History:</span> Used by Julius Caesar to protect military communications, shifting by 3 positions. Ancient cryptography at its finest!</p>
+            <p class="mt-3 text-gray-200"><span class="font-bold text-cyan-300">How it works:</span> Replace each letter with a letter a certain number of places away. Decryption reverses the shift.</p>
+            <p class="mt-3 text-gray-200">Modern cryptography builds on these principles, but today’s ciphers are far more complex.</p>
+          </div>
+          <div class="bg-black/30 rounded-xl p-4 border border-cyan-500/30">
+            <i class="fas fa-chart-line text-cyan-400 text-2xl mb-2 block"></i>
+            <p class="italic text-sm">"Cipher wheel demo: A → D, B → E ... (Shift 3)"</p>
+            <div class="mt-3 font-mono text-sm bg-cyan-950/40 p-3 rounded-lg">
+              <span class="text-cyan-300">Plain: </span>ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>
+              <span class="text-green-300">Shifted: </span><span id="visualShiftRow" class="font-bold">DEFGHIJKLMNOPQRSTUVWXYZABC</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 text-center text-sm text-gray-400"><i class="fas fa-laptop-code mr-1"></i> Real-world importance: foundation of substitution ciphers → modern encryption (AES, RSA).</div>
+      </div>
+    </section>
+
+    <!-- 🔐 Encryption & Decryption Tool + Visual Wheel + Step-by-step combined -->
+    <section id="tool" class="fade-up my-16">
+      <div class="glass-card p-6 md:p-10">
+        <h2 class="text-3xl font-bold border-l-4 border-green-400 pl-4 mb-6">⚡ Interactive Caesar Cipher Tool</h2>
+        <!-- Message input & shift -->
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-semibold mb-2">📝 Your Message</label>
+            <textarea id="messageInput" rows="4" class="w-full bg-black/40 border border-gray-600 rounded-xl p-3 text-white focus:border-cyan-400 outline-none resize-none" placeholder="Type or paste a message... (supports A-Z, a-z, spaces, symbols)"></textarea>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-2">🔁 Shift Key (1–25)</label>
+            <div class="flex items-center gap-4 flex-wrap">
+              <input type="number" id="shiftValue" min="1" max="25" value="3" class="w-28 bg-black/60 border border-cyan-500 rounded-xl p-2 text-center text-white font-bold">
+              <button id="randomShiftBtn" class="bg-purple-600/40 px-3 py-2 rounded-lg border border-purple-400 text-sm"><i class="fas fa-dice-d6"></i> Random</button>
+            </div>
+            <div class="mt-6 flex flex-wrap gap-3">
+              <button id="encryptBtn" class="bg-cyan-600 hover:bg-cyan-500 px-6 py-2 rounded-full flex items-center gap-2 shadow-md"><i class="fas fa-lock"></i> Encrypt</button>
+              <button id="decryptBtn" class="bg-emerald-600 hover:bg-emerald-500 px-6 py-2 rounded-full flex items-center gap-2"><i class="fas fa-unlock-alt"></i> Decrypt</button>
+              <button id="clearBtn" class="bg-gray-700 hover:bg-gray-600 px-5 py-2 rounded-full"><i class="fas fa-eraser"></i> Clear</button>
+              <button id="copyResultBtn" class="bg-indigo-600/70 hover:bg-indigo-500 px-5 py-2 rounded-full"><i class="fas fa-copy"></i> Copy</button>
+              <button id="downloadTxtBtn" class="bg-slate-600 hover:bg-slate-500 px-5 py-2 rounded-full"><i class="fas fa-download"></i> TXT</button>
+            </div>
+          </div>
+        </div>
+        <!-- Output area -->
+        <div class="mt-6">
+          <label class="block text-sm font-semibold mb-2">📋 Result</label>
+          <div id="outputResult" class="bg-black/50 border border-cyan-400/50 rounded-xl p-4 min-h-[80px] break-all font-mono text-lg tracking-wide">Your output will appear here...</div>
+        </div>
+
+        <!-- Cipher Visualization Section: Alphabet Wheel -->
+        <div class="mt-10 bg-black/30 p-4 rounded-xl">
+          <h3 class="text-xl font-semibold flex items-center gap-2"><i class="fas fa-chart-simple text-cyan-400"></i> Alphabet Shift Visualization</h3>
+          <div class="grid md:grid-cols-2 gap-4 mt-3 text-center">
+            <div><span class="text-gray-400">Original:</span> <span class="font-mono text-cyan-300 text-lg tracking-wider" id="origAlpha">ABCDEFGHIJKLMNOPQRSTUVWXYZ</span></div>
+            <div><span class="text-gray-400">Shifted by <span id="shiftDisplayVal">3</span>:</span> <span class="font-mono text-green-300 text-lg tracking-wider" id="shiftedAlpha">DEFGHIJKLMNOPQRSTUVWXYZABC</span></div>
+          </div>
+          <div class="mt-2 text-xs text-center text-gray-400" id="alphabetHighlightHelper">Example: A → <span id="exampleMap">D</span></div>
+        </div>
+
+        <!-- Step-by-Step Explanation -->
+        <div class="mt-8 bg-cyan-950/20 p-5 rounded-xl border border-cyan-500/40">
+          <h3 class="text-xl font-bold flex items-center gap-2"><i class="fas fa-list-ol text-green-300"></i> Step-by-Step Transformation</h3>
+          <div id="stepByStepArea" class="mt-3 text-sm font-mono bg-black/40 p-3 rounded max-h-48 overflow-y-auto">No message processed yet. Encrypt or decrypt to see detailed steps.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Statistics Dashboard & Learning Section Mix-->
+    <div class="grid md:grid-cols-2 gap-8 fade-up my-12">
+      <!-- Stats -->
+      <div class="glass-card p-6">
+        <h3 class="text-2xl font-bold flex items-center gap-2"><i class="fas fa-chart-simple text-cyan-400"></i> Statistics Dashboard</h3>
+        <div class="mt-4 space-y-3">
+          <div class="stat-card p-3 flex justify-between"><span>📊 Total Characters:</span><span id="statChars" class="font-bold">0</span></div>
+          <div class="stat-card p-3 flex justify-between"><span>🔤 Letters Processed:</span><span id="statLetters" class="font-bold">0</span></div>
+          <div class="stat-card p-3 flex justify-between"><span>⚙️ Current Shift:</span><span id="statShift" class="font-bold text-cyan-300">3</span></div>
+          <div class="stat-card p-3 flex justify-between"><span>🔒 Encryption Status:</span><span id="statStatus" class="font-bold text-green-400">Ready</span></div>
+        </div>
+      </div>
+      <!-- Learning Section Cards -->
+      <div class="glass-card p-6">
+        <h3 class="text-2xl font-bold flex items-center gap-2"><i class="fas fa-graduation-cap"></i> Cryptography Basics</h3>
+        <div class="grid grid-cols-2 gap-3 mt-4">
+          <div class="bg-black/30 p-3 rounded-xl text-center"><i class="fas fa-lock text-cyan-400 text-xl"></i><p class="font-semibold mt-1">Encryption</p><p class="text-xs">Plaintext → Ciphertext</p></div>
+          <div class="bg-black/30 p-3 rounded-xl text-center"><i class="fas fa-key text-green-400 text-xl"></i><p class="font-semibold mt-1">Decryption</p><p class="text-xs">Ciphertext → Plaintext</p></div>
+          <div class="bg-black/30 p-3 rounded-xl text-center"><i class="fas fa-sync-alt text-purple-400 text-xl"></i><p class="font-semibold mt-1">Symmetric</p><p class="text-xs">Same key for both</p></div>
+          <div class="bg-black/30 p-3 rounded-xl text-center"><i class="fas fa-scroll text-amber-400 text-xl"></i><p class="font-semibold mt-1">Classical Ciphers</p><p class="text-xs">Historical roots</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <section class="fade-up my-12 glass-card p-6 md:p-8">
+      <h2 class="text-2xl font-bold mb-4"><i class="fas fa-question-circle text-cyan-400 mr-2"></i> Frequently Asked Questions</h2>
+      <div class="grid md:grid-cols-2 gap-5 text-sm">
+        <div><span class="font-bold text-cyan-300">Q: What is Caesar Cipher?</span><br>A: Substitution cipher shifting letters by fixed positions.</div>
+        <div><span class="font-bold text-cyan-300">Q: Is Caesar Cipher secure?</span><br>A: No, easily broken by brute force (only 25 keys) or frequency analysis.</div>
+        <div><span class="font-bold text-cyan-300">Q: Where is it used?</span><br>A: Educational purposes, puzzles, and as a basis for more complex ciphers.</div>
+        <div><span class="font-bold text-cyan-300">Q: Limitations?</span><br>A: Preserves letter frequencies, no security for sensitive data.</div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="glass-card mt-16 p-6 text-center text-gray-300 text-sm">
+      <div class="flex justify-center gap-6 text-xl mb-3">
+        <a href="#" class="hover:text-cyan-400"><i class="fab fa-github"></i></a>
+        <a href="#" class="hover:text-cyan-400"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="hover:text-cyan-400"><i class="fab fa-linkedin"></i></a>
+      </div>
+      <p>📧 caesar-cipher@cyberlab.com | 🔐 Learn. Encrypt. Decrypt.</p>
+      <p class="mt-2 text-gray-500">&copy; 2026 Caesar Cipher Tool - Open Source Cybersecurity Education</p>
+    </footer>
+  </div>
+
+  <!-- Dark/Light mode toggle (floating) -->
+  <button id="darkModeToggle" class="fixed bottom-6 right-6 z-50 bg-black/50 backdrop-blur border border-cyan-400 rounded-full p-3 shadow-lg"><i class="fas fa-moon text-cyan-300"></i></button>
+
+  <script>
+    // ---------- CAESAR CIPHER CORE ----------
+    function caesarEncrypt(text, shift) {
+      shift = ((shift % 26) + 26) % 26;
+      return text.replace(/[A-Za-z]/g, (ch) => {
+        const base = (ch >= 'A' && ch <= 'Z') ? 65 : 97;
+        let code = ch.charCodeAt(0);
+        let shifted = ((code - base + shift) % 26) + base;
+        return String.fromCharCode(shifted);
+      });
+    }
+
+    function caesarDecrypt(text, shift) {
+      return caesarEncrypt(text, (26 - shift) % 26);
+    }
+
+    // Helper update stats
+    function updateStats(message, shiftVal, statusMsg) {
+      let letters = (message.match(/[A-Za-z]/g) || []).length;
+      document.getElementById('statChars').innerText = message.length;
+      document.getElementById('statLetters').innerText = letters;
+      document.getElementById('statShift').innerText = shiftVal;
+      document.getElementById('statStatus').innerHTML = statusMsg;
+    }
+
+    // update alphabet visualizer
+    function updateAlphabetVisual(shift) {
+      const alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const shifted = alpha.slice(shift) + alpha.slice(0, shift);
+      document.getElementById('shiftedAlpha').innerText = shifted;
+      document.getElementById('shiftDisplayVal').innerText = shift;
+      document.getElementById('visualShiftRow').innerText = shifted;
+      let firstLetter = alpha[0];
+      let mapped = shifted[0];
+      document.getElementById('exampleMap').innerHTML = `${firstLetter} → ${mapped}`;
+    }
+
+    // Step-by-step explanation builder
+    function buildSteps(original, shift, mode) { // mode 'encrypt' or 'decrypt'
+      if (!original.trim()) return "No text to process.";
+      let resultText = (mode === 'encrypt') ? caesarEncrypt(original, shift) : caesarDecrypt(original, shift);
+      let stepsHtml = `<p class="mb-2 font-bold text-cyan-300">Original: "${original}"<br>Shift: ${shift} (${mode === 'encrypt' ? 'Encryption' : 'Decryption'})</p><div class="grid grid-cols-1 gap-1 text-xs">`;
+      let letterIndex = 0;
+      for (let char of original) {
+        if (/[A-Za-z]/.test(char)) {
+          let base = (char >= 'A' && char <= 'Z') ? 65 : 97;
+          let origCode = char.charCodeAt(0);
+          let outChar = resultText[letterIndex];
+          let newCode = outChar.charCodeAt(0);
+          let shiftApplied = ((newCode - base + 26) % 26) - ((origCode - base + 26) % 26);
+          if (mode === 'decrypt') shiftApplied = -shiftApplied;
+          stepsHtml += `<div class="border-b border-gray-700 py-1"><span class="text-green-300">'${char}'</span> → <span class="text-cyan-300">'${outChar}'</span> (shift ${shiftApplied >0 ? '+' : ''}${shiftApplied})</div>`;
+        } else {
+          let outChar = resultText[letterIndex];
+          stepsHtml += `<div class="border-b border-gray-700 py-1 text-gray-400">'${char}' (non-letter) → '${outChar}'</div>`;
+        }
+        letterIndex++;
+      }
+      stepsHtml += `</div><p class="mt-2 font-bold text-green-300">Result: "${resultText}"</p>`;
+      return stepsHtml;
+    }
+
+    // Character animation on output
+    function animateOutput(text) {
+      const outputDiv = document.getElementById('outputResult');
+      outputDiv.innerHTML = '';
+      for(let i=0; i<text.length; i++) {
+        let span = document.createElement('span');
+        span.innerText = text[i];
+        span.className = 'char-animate inline-block';
+        span.style.animationDelay = `${i * 0.01}s`;
+        outputDiv.appendChild(span);
+      }
+    }
+
+    let currentMode = null; // 'encrypt' or 'decrypt'
+    let lastMessage = "";
+    let lastShift = 3;
+
+    function refreshToolBasedOnMode() {
+      let msg = document.getElementById('messageInput').value;
+      let shift = parseInt(document.getElementById('shiftValue').value) || 0;
+      if (shift < 1) shift = 1;
+      if (shift > 25) shift = 25;
+      document.getElementById('shiftValue').value = shift;
+      updateAlphabetVisual(shift);
+      if (msg === "") {
+        document.getElementById('outputResult').innerHTML = "Enter message above...";
+        document.getElementById('stepByStepArea').innerHTML = "Waiting for input.";
+        updateStats(msg, shift, "Idle");
+        return;
+      }
+      let output = "";
+      let stepDesc = "";
+      if (currentMode === 'encrypt') {
+        output = caesarEncrypt(msg, shift);
+        stepDesc = buildSteps(msg, shift, 'encrypt');
+        updateStats(msg, shift, "Encrypted");
+      } else if (currentMode === 'decrypt') {
+        output = caesarDecrypt(msg, shift);
+        stepDesc = buildSteps(msg, shift, 'decrypt');
+        updateStats(msg, shift, "Decrypted");
+      } else {
+        output = "Click Encrypt or Decrypt";
+        stepDesc = "No operation selected.";
+        updateStats(msg, shift, "Ready");
+      }
+      if (currentMode) animateOutput(output);
+      else document.getElementById('outputResult').innerHTML = output;
+      document.getElementById('stepByStepArea').innerHTML = stepDesc;
+      lastMessage = msg;
+      lastShift = shift;
+    }
+
+    // Event listeners
+    document.getElementById('encryptBtn').addEventListener('click', () => {
+      currentMode = 'encrypt';
+      refreshToolBasedOnMode();
+      showNotification("Encryption applied! ✅", "success");
+    });
+    document.getElementById('decryptBtn').addEventListener('click', () => {
+      currentMode = 'decrypt';
+      refreshToolBasedOnMode();
+      showNotification("Decryption applied! 🔓", "success");
+    });
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      document.getElementById('messageInput').value = "";
+      document.getElementById('outputResult').innerHTML = "Cleared. Ready for new message.";
+      document.getElementById('stepByStepArea').innerHTML = "Cleared. Type new message and choose encrypt/decrypt.";
+      currentMode = null;
+      updateStats("", parseInt(document.getElementById('shiftValue').value), "Cleared");
+      showNotification("All fields cleared.", "info");
+    });
+    document.getElementById('copyResultBtn').addEventListener('click', () => {
+      let resultText = document.getElementById('outputResult').innerText;
+      if (!resultText || resultText.includes("output will appear")) {
+        showNotification("Nothing to copy!", "error");
+        return;
+      }
+      navigator.clipboard.writeText(resultText);
+      showNotification("Copied to clipboard! 📋", "success");
+    });
+    document.getElementById('downloadTxtBtn').addEventListener('click', () => {
+      let content = document.getElementById('outputResult').innerText;
+      if (!content || content === "Your output will appear here...") {
+        showNotification("No result to download.", "error");
+        return;
+      }
+      let blob = new Blob([content], {type: "text/plain"});
+      let a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = "caesar_cipher_result.txt";
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showNotification("Downloaded as TXT file 📁", "success");
+    });
+    document.getElementById('randomShiftBtn').addEventListener('click', () => {
+      let rand = Math.floor(Math.random() * 25) + 1;
+      document.getElementById('shiftValue').value = rand;
+      refreshToolBasedOnMode();
+      showNotification(`Random shift: ${rand} generated! 🎲`, "info");
+    });
+    document.getElementById('messageInput').addEventListener('input', () => {
+      if(currentMode) refreshToolBasedOnMode();
+      else { 
+        let shift = parseInt(document.getElementById('shiftValue').value);
+        updateStats(document.getElementById('messageInput').value, shift, "Ready");
+      }
+    });
+    document.getElementById('shiftValue').addEventListener('input', () => {
+      let val = parseInt(document.getElementById('shiftValue').value);
+      if(isNaN(val)) val=3;
+      val = Math.min(25, Math.max(1, val));
+      document.getElementById('shiftValue').value = val;
+      updateAlphabetVisual(val);
+      if(currentMode) refreshToolBasedOnMode();
+      else if(document.getElementById('messageInput').value) refreshToolBasedOnMode();
+    });
+
+    function showNotification(msg, type) {
+      let notif = document.createElement('div');
+      notif.className = `fixed top-5 left-1/2 transform -translate-x-1/2 z-50 px-6 py-2 rounded-full text-white font-semibold shadow-xl transition-all duration-300 ${type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-cyan-700'} animate-bounce`;
+      notif.innerText = msg;
+      document.body.appendChild(notif);
+      setTimeout(() => { notif.remove(); }, 2200);
+    }
+
+    // Dark/Light Mode toggle
+    const darkToggle = document.getElementById('darkModeToggle');
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      if (document.body.classList.contains('dark')) {
+        document.body.style.background = "radial-gradient(circle at 20% 30%, #010205, #000000)";
+        darkToggle.innerHTML = '<i class="fas fa-sun text-yellow-300"></i>';
+      } else {
+        document.body.style.background = "radial-gradient(circle at 20% 30%, #0a0f1e, #03050b)";
+        darkToggle.innerHTML = '<i class="fas fa-moon text-cyan-300"></i>';
+      }
+    });
+
+    // Floating binary generator
+    function generateBinary() {
+      const bgDiv = document.getElementById('binaryBg');
+      setInterval(() => {
+        let span = document.createElement('div');
+        span.className = 'binary-float';
+        let binarySeq = Math.random() > 0.5 ? '010110' : '101001';
+        span.innerText = binarySeq + (Math.random() > 0.6 ? '101' : '011');
+        span.style.left = Math.random() * 100 + '%';
+        span.style.animationDuration = 12 + Math.random() * 20 + 's';
+        span.style.fontSize = 0.8 + Math.random() * 1.5 + 'rem';
+        span.style.opacity = 0.1 + Math.random() * 0.2;
+        bgDiv.appendChild(span);
+        setTimeout(() => { span.remove(); }, 20000);
+      }, 1800);
+    }
+    generateBinary();
+
+    // Scroll animations (fade-up)
+    const faders = document.querySelectorAll('.fade-up');
+    const appearOptions = { threshold: 0.2 };
+    const appearOnScroll = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if(!entry.isIntersecting) return;
+        entry.target.classList.add('appear');
+        obs.unobserve(entry.target);
+      });
+    }, appearOptions);
+    faders.forEach(f => appearOnScroll.observe(f));
+
+    // Try now scroll to tool
+    document.getElementById('tryNowBtn').addEventListener('click', () => {
+      document.getElementById('tool').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // Reset all initial viz
+    updateAlphabetVisual(3);
+    document.getElementById('shiftValue').value = 3;
+    // realtime preview (encrypt preview but shows on any change)
+    window.refreshToolBasedOnMode = refreshToolBasedOnMode;
+  </script>
+</body>
+</html>
